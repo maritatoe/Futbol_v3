@@ -43,8 +43,7 @@ export default function ArmarPartido() {
     setBuildError(null)
     const justPlayers = activos.filter(j => seleccionados.has(j.id))
     try {
-      const mode = `${justPlayers.length / 2}v${justPlayers.length / 2}`
-      const res = armarEquiposInteligente(justPlayers, mode, variacion)
+      const res = armarEquiposInteligente(justPlayers, variacion)
       setResultado(res)
     } catch (err: any) {
       setBuildError(err.message)
