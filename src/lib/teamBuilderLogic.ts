@@ -16,7 +16,6 @@ const ORDEN_PRIORIDAD = ['ARQ', 'DEF', 'MED', 'DEL']
 
 export function armarEquiposInteligente(
   jugadoresSeleccionados: Jugador[],
-  formacionStr: string,
   variacion: boolean = false
 ): { equipoA: EquipoArmado, equipoB: EquipoArmado, diferencia: number } {
 
