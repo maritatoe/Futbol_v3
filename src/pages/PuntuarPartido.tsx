@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { recalcularYActualizarRating } from '../lib/ratingLogic'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, ArrowLeftRight } from 'lucide-react'
 
 export default function PuntuarPartido() {
   const { partidoId } = useParams()
@@ -38,6 +38,15 @@ export default function PuntuarPartido() {
     setLoading(false)
   }
 
+  function swapJugador(jugadorId: string) {
+    setJugadores(prev => prev.map(j => {
+      if (j.jugador_id === jugadorId) {
+        return { ...j, equipo: j.equipo === 'A' ? 'B' : 'A' }
+      }
+      return j
+    }))
+  }
+
   async function guardarPuntajes() {
     setSaving(true)
     try {
@@ -65,6 +74,14 @@ export default function PuntuarPartido() {
         goles_juve: golesJuve
       }).eq('id', partidoId!)
 
+      // Actualizar composición de equipos (por si hubo swaps)
+      await Promise.all(jugadores.map(j =>
+        supabase.from('equipos_partido')
+          .update({ equipo: j.equipo })
+          .eq('partido_id', partidoId!)
+          .eq('jugador_id', j.jugador_id)
+      ))
+
       // Recalcular ratings de cada participante
       await Promise.all(Object.keys(puntajes).map(jid => recalcularYActualizarRating(jid)))
 
@@ -88,7 +105,16 @@ export default function PuntuarPartido() {
       {eq.map(j => (
         <div key={j.jugador_id} className="mb-4 pb-4 border-b last:border-0 last:pb-0 last:mb-0">
           <div className="flex justify-between items-center mb-2">
-            <div className="font-semibold text-gray-800">{j.jugadores.nombre}</div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => swapJugador(j.jugador_id)}
+                className="p-1.5 rounded-full text-gray-400 hover:text-purple-600 hover:bg-purple-50 transition-colors active:scale-90"
+                title={`Mover a ${j.equipo === 'A' ? 'Juve' : 'Barsa'}`}
+              >
+                <ArrowLeftRight size={16} />
+              </button>
+              <div className="font-semibold text-gray-800">{j.jugadores.nombre}</div>
+            </div>
             <div className="text-xl font-black text-blue-600">{puntajes[j.jugador_id]}</div>
           </div>
           <input 
