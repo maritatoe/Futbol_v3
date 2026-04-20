@@ -20,7 +20,7 @@ export default function Historial() {
     const { data, error } = await supabase
       .from('partidos')
       .select(`
-        id, fecha, formacion,
+        id, fecha, formacion, goles_barsa, goles_juve,
         equipos_partido (
           equipo, posicion_asignada,
           jugadores ( nombre, rating )
@@ -73,6 +73,17 @@ export default function Historial() {
                         <span className="text-xs bg-amber-100 text-amber-700 px-2 rounded font-medium inline-block">Pendiente</span>
                       )}
                     </div>
+                    {isPuntuado && p.goles_barsa != null && p.goles_juve != null ? (
+                      <div className="mt-1.5 flex items-center gap-1.5">
+                        <span className="text-sm font-black text-blue-700">Barsa {p.goles_barsa}</span>
+                        <span className="text-xs text-gray-400 font-bold">-</span>
+                        <span className="text-sm font-black text-orange-700">{p.goles_juve} Juve</span>
+                      </div>
+                    ) : (
+                      <div className="mt-1.5">
+                        <span className="text-sm font-semibold text-gray-400">Barsa vs Juve</span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="text-gray-400">

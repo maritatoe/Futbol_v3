@@ -47,16 +47,22 @@ export interface Database {
           id: string
           fecha: string
           formacion: string
+          goles_barsa: number | null
+          goles_juve: number | null
         }
         Insert: {
           id?: string
           fecha?: string
           formacion?: string
+          goles_barsa?: number | null
+          goles_juve?: number | null
         }
         Update: {
           id?: string
           fecha?: string
           formacion?: string
+          goles_barsa?: number | null
+          goles_juve?: number | null
         }
         Relationships: []
       }

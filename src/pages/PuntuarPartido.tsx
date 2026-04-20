@@ -11,6 +11,8 @@ export default function PuntuarPartido() {
   const [puntajes, setPuntajes] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [golesBarsa, setGolesBarsa] = useState(0)
+  const [golesJuve, setGolesJuve] = useState(0)
 
   useEffect(() => {
     fetchParticipantes()
@@ -57,6 +59,12 @@ export default function PuntuarPartido() {
         throw errInsert
       }
 
+      // Guardar marcador del partido
+      await supabase.from('partidos').update({
+        goles_barsa: golesBarsa,
+        goles_juve: golesJuve
+      }).eq('id', partidoId!)
+
       // Recalcular ratings de cada participante
       await Promise.all(Object.keys(puntajes).map(jid => recalcularYActualizarRating(jid)))
 
@@ -100,6 +108,36 @@ export default function PuntuarPartido() {
       <div className="bg-blue-600 text-white rounded-xl p-4 mb-6 shadow-md">
         <h2 className="text-lg font-bold">Post Partido</h2>
         <p className="text-sm text-blue-100 mt-1">Califica el rendimiento de cada jugador. Esto afectará su rating general según el algoritmo dinámico.</p>
+      </div>
+
+      {/* Marcador */}
+      <div className="bg-white rounded-xl shadow-sm border p-4 mb-6">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider text-center mb-4">Marcador del Partido</h3>
+        <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-sm font-bold text-blue-800">Barsa</span>
+            <input
+              type="number"
+              min="0"
+              max="99"
+              value={golesBarsa}
+              onChange={(e) => setGolesBarsa(Math.max(0, parseInt(e.target.value) || 0))}
+              className="w-16 h-14 text-center text-2xl font-black border-2 border-blue-300 rounded-xl bg-blue-50 text-blue-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+            />
+          </div>
+          <span className="text-2xl font-black text-gray-300 mt-5">-</span>
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-sm font-bold text-orange-800">Juve</span>
+            <input
+              type="number"
+              min="0"
+              max="99"
+              value={golesJuve}
+              onChange={(e) => setGolesJuve(Math.max(0, parseInt(e.target.value) || 0))}
+              className="w-16 h-14 text-center text-2xl font-black border-2 border-orange-300 rounded-xl bg-orange-50 text-orange-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
+            />
+          </div>
+        </div>
       </div>
 
       <RenderEquipo eq={equipoA} color="border-blue-500" title="Barsa" />
