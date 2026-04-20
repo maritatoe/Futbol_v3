@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Database } from '../types/database.types'
-import { Plus, X, Edit, Power } from 'lucide-react'
+import { Plus, X, Edit, Power, Trash2 } from 'lucide-react'
 import clsx from 'clsx'
 
 type Jugador = Database['public']['Tables']['jugadores']['Row']
@@ -24,7 +24,7 @@ export default function Jugadores() {
   }, [])
 
   async function fetchJugadores() {
-    const { data, error } = await supabase.from('jugadores').select('*').order('nombre')
+    const { data, error } = await supabase.from('jugadores').select('*').eq('is_archived', false).order('activo', { ascending: false }).order('nombre')
     if (error) console.error(error)
     else setJugadores(data || [])
     setLoading(false)
@@ -50,6 +50,13 @@ export default function Jugadores() {
   async function toggleActivo(j: Jugador) {
     await supabase.from('jugadores').update({ activo: !j.activo }).eq('id', j.id)
     fetchJugadores()
+  }
+
+  async function archiveJugador(j: Jugador) {
+    if (window.confirm(`¿Estás seguro de archivar a ${j.nombre}? No aparecerá en las listas pero su historial se mantiene.`)) {
+      await supabase.from('jugadores').update({ is_archived: true }).eq('id', j.id)
+      fetchJugadores()
+    }
   }
 
   function openEdit(j: Jugador) {
@@ -100,10 +107,13 @@ export default function Jugadores() {
             </div>
 
             <div className="flex gap-2">
-              <button onClick={() => toggleActivo(j)} className={clsx("p-2 rounded-full", j.activo ? "text-green-600 bg-green-50" : "text-gray-400 bg-gray-100")}>
+              <button onClick={() => archiveJugador(j)} className="p-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100 transition-colors" title="Archivar">
+                <Trash2 size={18} />
+              </button>
+              <button onClick={() => toggleActivo(j)} className={clsx("p-2 rounded-full transition-colors", j.activo ? "text-green-600 bg-green-50 hover:bg-green-100" : "text-gray-400 bg-gray-100 hover:bg-gray-200")} title={j.activo ? 'Desactivar' : 'Activar'}>
                 <Power size={18} />
               </button>
-              <button onClick={() => openEdit(j)} className="p-2 rounded-full text-blue-600 bg-blue-50">
+              <button onClick={() => openEdit(j)} className="p-2 rounded-full text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors" title="Editar">
                 <Edit size={18} />
               </button>
             </div>

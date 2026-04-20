@@ -20,16 +20,16 @@ export default function PuntuarPartido() {
     if (!partidoId) return
     const { data: partido, error } = await supabase
       .from('partidos')
-      .select('fecha, formacion, equipos_partido(jugador_id, equipo, posicion_asignada, jugadores(nombre))')
+      .select('fecha, formacion, equipos_partido(jugador_id, equipo, posicion_asignada, jugadores(nombre, rating))')
       .eq('id', partidoId)
       .single()
 
     if (!error && partido && partido.equipos_partido) {
       setJugadores(partido.equipos_partido)
-      // Initialize scores at 5
+      // Initialize scores at each player's current rating
       const initScores: any = {}
       partido.equipos_partido.forEach((ep: any) => {
-        initScores[ep.jugador_id] = 5
+        initScores[ep.jugador_id] = ep.jugadores?.rating ?? 5
       })
       setPuntajes(initScores)
     }

@@ -17,6 +17,7 @@ export interface Database {
           puntaje_base: number
           rating: number
           activo: boolean
+          is_archived: boolean
           created_at: string
         }
         Insert: {
@@ -26,6 +27,7 @@ export interface Database {
           puntaje_base?: number
           rating?: number
           activo?: boolean
+          is_archived?: boolean
           created_at?: string
         }
         Update: {
@@ -35,6 +37,7 @@ export interface Database {
           puntaje_base?: number
           rating?: number
           activo?: boolean
+          is_archived?: boolean
           created_at?: string
         }
         Relationships: []

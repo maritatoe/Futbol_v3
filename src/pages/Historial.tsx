@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { ChevronDown, ChevronUp, Calendar } from 'lucide-react'
+import { ChevronDown, ChevronUp, Calendar, ClipboardCheck } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function Historial() {
   const [partidos, setPartidos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchPartidos()
@@ -22,7 +24,8 @@ export default function Historial() {
         equipos_partido (
           equipo, posicion_asignada,
           jugadores ( nombre, rating )
-        )
+        ),
+        rendimiento ( id )
       `)
       .order('fecha', { ascending: false })
 
@@ -41,6 +44,7 @@ export default function Historial() {
       <div className="space-y-4">
         {partidos.map((p) => {
           const isExpanded = expandedId === p.id
+          const isPuntuado = p.rendimiento && p.rendimiento.length > 0
           
           const eqA = p.equipos_partido.filter((e:any) => e.equipo === 'A')
           const eqB = p.equipos_partido.filter((e:any) => e.equipo === 'B')
@@ -59,9 +63,16 @@ export default function Historial() {
                     <h4 className="font-bold text-gray-900 capitalize">
                       {p.fecha ? format(new Date(p.fecha), "EEEE d 'de' MMMM", { locale: es }) : 'Desconocida'}
                     </h4>
-                    <span className="text-xs bg-gray-200 text-gray-700 px-2 rounded font-medium mt-1 inline-block">
-                      Formación: {p.formacion}
-                    </span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs bg-gray-200 text-gray-700 px-2 rounded font-medium inline-block">
+                        Formación: {p.formacion}
+                      </span>
+                      {isPuntuado ? (
+                        <span className="text-xs bg-green-100 text-green-700 px-2 rounded font-medium inline-block">✓ Puntuado</span>
+                      ) : (
+                        <span className="text-xs bg-amber-100 text-amber-700 px-2 rounded font-medium inline-block">Pendiente</span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="text-gray-400">
@@ -97,6 +108,17 @@ export default function Historial() {
                     </ul>
                   </div>
                 </div>
+
+                {!isPuntuado && (
+                  <div className="px-4 pb-4">
+                    <button
+                      onClick={() => navigate('/puntuar/' + p.id)}
+                      className="w-full bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
+                    >
+                      <ClipboardCheck size={20} /> Cargar Puntuaciones
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )

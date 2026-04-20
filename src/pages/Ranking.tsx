@@ -22,6 +22,7 @@ export default function Ranking() {
           id, puntaje
         )
       `)
+      .eq('is_archived', false)
       .order('rating', { ascending: false })
 
     if (!error && jugadores) {
