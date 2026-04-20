@@ -12,10 +12,10 @@ export default function ArmarPartido() {
   const [activos, setActivos] = useState<Jugador[]>([])
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
-  
-  const [resultado, setResultado] = useState<{equipoA: EquipoArmado, equipoB: EquipoArmado, diferencia: number} | null>(null)
+
+  const [resultado, setResultado] = useState<{ equipoA: EquipoArmado, equipoB: EquipoArmado, diferencia: number } | null>(null)
   const [buildError, setBuildError] = useState<string | null>(null)
-  
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function ArmarPartido() {
   }, [])
 
   async function fetchActivos() {
-    const { data } = await supabase.from('jugadores').select('*').eq('activo', true).eq('is_archived', false).order('rating', { ascending: false })
+    const { data } = await supabase.from('jugadores').select('*').eq('activo', true).order('rating', { ascending: false })
     if (data) {
       setActivos(data)
       // Por defecto seleccionar los mejores N según la formación actual para facilitar? Mejor no, dejar que el usuario seleccione.
@@ -74,11 +74,15 @@ export default function ArmarPartido() {
     }))
 
     const { error: eqErr } = await supabase.from('equipos_partido').insert([...insertA, ...insertB])
-    
+
     if (eqErr) alert('Error guardando jugadores: ' + eqErr.message)
     else {
-        alert('¡Partido guardado con éxito!')
-        navigate('/puntuar/' + partido.id)
+      // Limpiar estado para evitar duplicados si el usuario vuelve atrás
+      setSeleccionados(new Set())
+      setResultado(null)
+      setBuildError(null)
+      alert('¡Partido guardado con éxito!')
+      navigate('/historial')
     }
   }
 
@@ -90,7 +94,7 @@ export default function ArmarPartido() {
         <h2 className="text-xl font-bold text-gray-800 mb-2">Armar Partido</h2>
 
         <div className="flex justify-between items-center mb-2">
-          <span className="font-semibold text-gray-700 text-sm">Activos Disponibles:</span>
+          <span className="font-semibold text-gray-700 text-sm">Jugadores</span>
           <span className={clsx("font-bold text-sm px-2 py-0.5 rounded-full", seleccionados.size > 0 && seleccionados.size % 2 === 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")}>
             Seleccionados: {seleccionados.size} {seleccionados.size > 0 && seleccionados.size % 2 === 0 ? `(${seleccionados.size / 2}v${seleccionados.size / 2})` : '(Debe ser par)'}
           </span>
@@ -98,8 +102,8 @@ export default function ArmarPartido() {
 
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-4 max-h-48 overflow-y-auto p-1">
           {activos.map(j => (
-            <div 
-              key={j.id} 
+            <div
+              key={j.id}
               onClick={() => toggleSeleccion(j.id)}
               className={clsx(
                 "p-2 rounded-xl text-center border-2 transition-all cursor-pointer font-medium text-xs sm:text-sm",
@@ -114,24 +118,24 @@ export default function ArmarPartido() {
 
         {buildError && (
           <div className="p-3 bg-red-50 text-red-700 border-l-4 border-red-500 rounded flex gap-2 items-center text-sm mb-4">
-            <AlertTriangle size={18}/> {buildError}
+            <AlertTriangle size={18} /> {buildError}
           </div>
         )}
 
         {/* Action Buttons */}
         <div className="flex gap-2">
-          <button 
-            onClick={() => armar()} 
+          <button
+            onClick={() => armar()}
             className="flex-1 bg-blue-600 active:bg-blue-700 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
           >
-            <Users size={20}/> Armar Original
+            <Users size={20} /> Armar Original
           </button>
-          <button 
-            onClick={() => armar(true)} 
+          <button
+            onClick={() => armar(true)}
             className="bg-purple-600 active:bg-purple-700 text-white p-3 rounded-xl px-4 shadow-md transition-all active:scale-95 flex items-center justify-center"
             title="Añadir variación en los ratings para cambiar equipos"
           >
-            <Shuffle size={20}/>
+            <Shuffle size={20} />
           </button>
         </div>
       </div>
@@ -139,12 +143,12 @@ export default function ArmarPartido() {
       {/* Resultado */}
       {resultado && (
         <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          
-          <div className={clsx("p-3 rounded-xl text-center font-bold border flex items-center justify-center gap-2", 
-              resultado.diferencia <= 2 ? "bg-green-50 text-green-700 border-green-200" : "bg-orange-50 text-orange-700 border-orange-200"
-            )}>
-              {resultado.diferencia <= 2 ? "¡Equipos Muy Parejos!" : "Equipos algo desbalanceados"} 
-              <span className="text-sm font-normal">(Dif: {resultado.diferencia.toFixed(2)})</span>
+
+          <div className={clsx("p-3 rounded-xl text-center font-bold border flex items-center justify-center gap-2",
+            resultado.diferencia <= 2 ? "bg-green-50 text-green-700 border-green-200" : "bg-orange-50 text-orange-700 border-orange-200"
+          )}>
+            {resultado.diferencia <= 2 ? "¡Equipos Muy Parejos!" : "Equipos algo desbalanceados"}
+            <span className="text-sm font-normal">(Dif: {resultado.diferencia.toFixed(2)})</span>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -152,7 +156,7 @@ export default function ArmarPartido() {
             <div className="bg-white rounded-2xl p-4 shadow-md border-t-8 border-t-blue-500 relative">
               <h3 className="font-black text-xl text-blue-900 absolute -top-4 bg-white px-3 rounded-full border border-blue-200 shadow-sm left-1/2 -translate-x-1/2">Barsa</h3>
               <div className="text-center text-xs font-bold text-gray-500 mt-2 mb-3 bg-gray-50 rounded-lg py-1">Overall: ★{resultado.equipoA.totalRating}</div>
-              
+
               <div className="space-y-2">
                 {resultado.equipoA.jugadores.map((j) => (
                   <div key={j.id} className="flex justify-between items-center text-sm border-b pb-1">
@@ -167,7 +171,7 @@ export default function ArmarPartido() {
             <div className="bg-white rounded-2xl p-4 shadow-md border-t-8 border-t-orange-500 relative">
               <h3 className="font-black text-xl text-orange-900 absolute -top-4 bg-white px-3 rounded-full border border-orange-200 shadow-sm left-1/2 -translate-x-1/2">Juve</h3>
               <div className="text-center text-xs font-bold text-gray-500 mt-2 mb-3 bg-gray-50 rounded-lg py-1">Overall: ★{resultado.equipoB.totalRating}</div>
-              
+
               <div className="space-y-2">
                 {resultado.equipoB.jugadores.map((j) => (
                   <div key={j.id} className="flex justify-between items-center text-sm border-b pb-1">
@@ -180,7 +184,7 @@ export default function ArmarPartido() {
           </div>
 
           <button onClick={guardarPartido} className="w-full mt-4 bg-green-500 text-white font-bold p-4 rounded-xl shadow-lg border-b-4 border-green-700 active:translate-y-1 active:border-b-0 flex justify-center items-center gap-2">
-            <Save size={20}/> Confirmar y Guardar Partido
+            <Save size={20} /> Confirmar y Guardar Partido
           </button>
         </div>
       )}
