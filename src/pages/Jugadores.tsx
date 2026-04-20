@@ -107,14 +107,14 @@ export default function Jugadores() {
             </div>
 
             <div className="flex gap-2">
-              <button onClick={() => archiveJugador(j)} className="p-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100 transition-colors" title="Archivar">
-                <Trash2 size={18} />
-              </button>
               <button onClick={() => toggleActivo(j)} className={clsx("p-2 rounded-full transition-colors", j.activo ? "text-green-600 bg-green-50 hover:bg-green-100" : "text-gray-400 bg-gray-100 hover:bg-gray-200")} title={j.activo ? 'Desactivar' : 'Activar'}>
                 <Power size={18} />
               </button>
               <button onClick={() => openEdit(j)} className="p-2 rounded-full text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors" title="Editar">
                 <Edit size={18} />
+              </button>
+              <button onClick={() => archiveJugador(j)} className="p-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100 transition-colors" title="Archivar">
+                <Trash2 size={18} />
               </button>
             </div>
           </div>
