@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Database } from '../types/database.types'
 import { Plus, X, Edit, Power, Trash2 } from 'lucide-react'
+import { recalcularYActualizarRating } from '../lib/ratingLogic'
 import clsx from 'clsx'
 
 type Jugador = Database['public']['Tables']['jugadores']['Row']
@@ -34,7 +35,8 @@ export default function Jugadores() {
     if (!nombre.trim() || posiciones.length === 0) return alert('Nombre y al menos una posición requerida')
 
     if (editingId) {
-      supabase.from('jugadores').update({ nombre, posiciones, puntaje_base: puntajeBase }).eq('id', editingId).then(() => {
+      supabase.from('jugadores').update({ nombre, posiciones, puntaje_base: puntajeBase }).eq('id', editingId).then(async () => {
+        await recalcularYActualizarRating(editingId)
         setEditingId(null)
         setShowModal(false)
         fetchJugadores()
