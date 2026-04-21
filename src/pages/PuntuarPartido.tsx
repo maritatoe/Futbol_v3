@@ -138,17 +138,12 @@ export default function PuntuarPartido() {
 
   return (
     <div className="p-4 pb-24">
-      <div className="bg-blue-600 text-white rounded-xl p-4 mb-6 shadow-md">
-        <h2 className="text-lg font-bold">Post Partido</h2>
-        <p className="text-sm text-blue-100 mt-1">Califica el rendimiento de cada jugador. Esto afectará su rating general según el algoritmo dinámico.</p>
-      </div>
-
       {/* Marcador */}
       <div className="bg-white rounded-xl shadow-sm border p-4 mb-6">
-        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider text-center mb-4">Marcador del Partido</h3>
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider text-center mb-4">RESULTADO DEL PARTIDO</h3>
         <div className="flex items-center justify-center gap-3">
           <div className="flex flex-col items-center gap-1">
-            <span className="text-sm font-bold text-blue-800">Barsa</span>
+            <span className="text-sm font-bold text-blue-800">BARSA</span>
             <input
               type="number"
               min="0"
@@ -160,7 +155,7 @@ export default function PuntuarPartido() {
           </div>
           <span className="text-2xl font-black text-gray-300 mt-5">-</span>
           <div className="flex flex-col items-center gap-1">
-            <span className="text-sm font-bold text-orange-800">Juve</span>
+            <span className="text-sm font-bold text-orange-800">JUVE</span>
             <input
               type="number"
               min="0"
@@ -171,6 +166,13 @@ export default function PuntuarPartido() {
             />
           </div>
         </div>
+      </div>
+
+      <div className="bg-blue-600 text-white rounded-xl p-4 mb-6 shadow-md">
+        <h2 className="text-lg font-bold">Post Partido</h2>
+        <p className="text-sm text-blue-100 mt-1">
+          Califica el rendimiento de cada jugador. Esto afectará su rating general según el algoritmo dinámico. Si algún jugador cambió de equipo puedes moverlo con las flechitas <ArrowLeftRight size={14} className="inline -mt-0.5 mx-0.5 text-blue-200" /> al costado de su nombre.
+        </p>
       </div>
 
       <RenderEquipo eq={equipoA} color="border-blue-500" title="Barsa" />
