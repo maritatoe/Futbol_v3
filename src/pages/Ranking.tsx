@@ -89,7 +89,7 @@ export default function Ranking() {
                   {idx === 0 && <span className="text-[10px] bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded font-black">MVP</span>}
                 </div>
                 <div className="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
-                  <span className="bg-gray-200 px-1 rounded-sm">{j.posiciones[0]}</span>
+                  <span className="bg-gray-200 px-1 rounded-sm">{j.posiciones.join(', ')}</span>
                   <span>Base: {j.puntaje_base}</span>
                   {j.pj > 0 && <span>• Prom: {j.promGral}</span>}
                 </div>
