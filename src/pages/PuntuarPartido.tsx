@@ -28,10 +28,10 @@ export default function PuntuarPartido() {
 
     if (!error && partido && partido.equipos_partido) {
       setJugadores(partido.equipos_partido)
-      // Initialize scores at each player's current rating
+      // Initialize scores at each player's current rating rounded to nearest integer
       const initScores: any = {}
       partido.equipos_partido.forEach((ep: any) => {
-        initScores[ep.jugador_id] = ep.jugadores?.rating ?? 5
+        initScores[ep.jugador_id] = Math.round(ep.jugadores?.rating ?? 5)
       })
       setPuntajes(initScores)
     }
@@ -115,15 +115,22 @@ export default function PuntuarPartido() {
               </button>
               <div className="font-semibold text-gray-800">{j.jugadores.nombre}</div>
             </div>
-            <div className="text-xl font-black text-blue-600">{puntajes[j.jugador_id]}</div>
+            <div className="text-xl font-black text-blue-600">{Number(puntajes[j.jugador_id]).toFixed(1)}</div>
           </div>
-          <input 
-            type="range" 
-            min="1" max="10" step="0.5"
-            value={puntajes[j.jugador_id]}
-            onChange={(e) => setPuntajes({...puntajes, [j.jugador_id]: Number(e.target.value)})}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
+          <div className="flex border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => {
+              const isSelected = puntajes[j.jugador_id] === num
+              return (
+                <button
+                  key={num}
+                  onClick={() => setPuntajes({...puntajes, [j.jugador_id]: num})}
+                  className={`flex-1 py-3 text-sm sm:text-base font-bold border-r border-gray-200 last:border-r-0 transition-colors ${isSelected ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 active:bg-gray-200'}`}
+                >
+                  {num}
+                </button>
+              )
+            })}
+          </div>
         </div>
       ))}
     </div>
