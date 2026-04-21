@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Database } from '../types/database.types'
 import { armarEquiposInteligente, EquipoArmado } from '../lib/teamBuilderLogic'
-import { Users, Shuffle, Save, AlertTriangle } from 'lucide-react'
+import { Users, Shuffle, Save, AlertTriangle, Zap, X } from 'lucide-react'
 import clsx from 'clsx'
 import { useNavigate } from 'react-router-dom'
 
@@ -11,6 +11,9 @@ type Jugador = Database['public']['Tables']['jugadores']['Row']
 export default function ArmarPartido() {
   const [activos, setActivos] = useState<Jugador[]>([])
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set())
+  const [restricciones, setRestricciones] = useState<Array<[string, string]>>([])
+  const [modoRestriccion, setModoRestriccion] = useState(false)
+  const [restriccionParcial, setRestriccionParcial] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   const [resultado, setResultado] = useState<{ equipoA: EquipoArmado, equipoB: EquipoArmado, diferencia: number } | null>(null)
@@ -32,9 +35,28 @@ export default function ArmarPartido() {
   }
 
   function toggleSeleccion(id: string) {
+    if (modoRestriccion) {
+      if (!seleccionados.has(id)) return // Only pair already selected players
+      if (restriccionParcial === id) {
+        setRestriccionParcial(null) // unselect
+      } else if (!restriccionParcial) {
+        setRestriccionParcial(id)
+      } else {
+        // Form a pair
+        setRestricciones([...restricciones, [restriccionParcial, id]])
+        setRestriccionParcial(null)
+      }
+      return
+    }
+
     const newSet = new Set(seleccionados)
-    if (newSet.has(id)) newSet.delete(id)
-    else newSet.add(id)
+    if (newSet.has(id)) {
+      newSet.delete(id)
+      // Remove any restrictions involving this player
+      setRestricciones(restricciones.filter(r => r[0] !== id && r[1] !== id))
+    } else {
+      newSet.add(id)
+    }
     setSeleccionados(newSet)
     setResultado(null)
   }
@@ -43,7 +65,7 @@ export default function ArmarPartido() {
     setBuildError(null)
     const justPlayers = activos.filter(j => seleccionados.has(j.id))
     try {
-      const res = armarEquiposInteligente(justPlayers, variacion)
+      const res = armarEquiposInteligente(justPlayers, variacion, restricciones)
       setResultado(res)
     } catch (err: any) {
       setBuildError(err.message)
@@ -101,19 +123,26 @@ export default function ArmarPartido() {
         </div>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-4 max-h-48 overflow-y-auto p-1">
-          {activos.map(j => (
-            <div
-              key={j.id}
-              onClick={() => toggleSeleccion(j.id)}
-              className={clsx(
-                "p-2 rounded-xl text-center border-2 transition-all cursor-pointer font-medium text-xs sm:text-sm",
-                seleccionados.has(j.id) ? "border-blue-500 bg-blue-50 text-blue-800" : "border-gray-200 bg-white hover:border-blue-300"
-              )}
-            >
-              <div className="line-clamp-1">{j.nombre}</div>
-              <div className="text-[10px] text-gray-500">{j.posiciones[0]} | ★{j.rating.toFixed(1)}</div>
-            </div>
-          ))}
+          {activos.map(j => {
+            const isRestricted = restricciones.some(r => r.includes(j.id))
+            return (
+              <div
+                key={j.id}
+                onClick={() => toggleSeleccion(j.id)}
+                className={clsx(
+                  "p-2 rounded-xl text-center border-2 transition-all cursor-pointer font-medium text-xs sm:text-sm relative overflow-hidden",
+                  seleccionados.has(j.id) ? "border-blue-500 bg-blue-50 text-blue-800" : "border-gray-200 bg-white hover:border-blue-300",
+                  modoRestriccion && !seleccionados.has(j.id) && "opacity-40 grayscale cursor-not-allowed",
+                  modoRestriccion && seleccionados.has(j.id) && restriccionParcial === j.id && "ring-4 ring-yellow-400 bg-yellow-100 border-yellow-500",
+                  isRestricted && "border-yellow-400 border-dashed"
+                )}
+              >
+                {isRestricted && <div className="absolute top-0 right-0 bg-yellow-400 text-white p-0.5 rounded-bl-lg shadow-sm"><Zap size={10} /></div>}
+                <div className="line-clamp-1">{j.nombre}</div>
+                <div className="text-[10px] text-gray-500">{j.posiciones[0]} | ★{j.rating.toFixed(1)}</div>
+              </div>
+            )
+          })}
         </div>
 
         {buildError && (
@@ -122,18 +151,53 @@ export default function ArmarPartido() {
           </div>
         )}
 
+        <div className="my-4">
+          <button
+            onClick={() => {
+              setModoRestriccion(!modoRestriccion);
+              setRestriccionParcial(null);
+            }}
+            className={clsx("flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold border transition-colors shadow-sm", modoRestriccion ? "bg-yellow-100 text-yellow-800 border-yellow-400" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")}
+          >
+            <Zap size={18} /> {modoRestriccion ? "Finalizar Separaciones" : "Definir Separaciones (No juegan juntos)"}
+          </button>
+          
+          {restricciones.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+               {restricciones.map((r, idx) => {
+                 const p1 = activos.find(a => a.id === r[0])?.nombre || '?'
+                 const p2 = activos.find(a => a.id === r[1])?.nombre || '?'
+                 return (
+                   <div key={idx} className="flex items-center gap-1 bg-yellow-50 border border-yellow-200 text-yellow-800 px-2 py-1 rounded-lg text-xs font-semibold shadow-sm">
+                     <span>{p1}</span> <Zap size={12} className="text-yellow-500" /> <span>{p2}</span>
+                     <button onClick={() => setRestricciones(restricciones.filter((_, i) => i !== idx))} className="ml-1 p-0.5 hover:bg-yellow-200 rounded-full text-yellow-600 transition-colors"><X size={12}/></button>
+                   </div>
+                 )
+               })}
+               <button onClick={() => setRestricciones([])} className="text-xs text-gray-500 underline ml-2 font-medium">Limpiar Todas</button>
+            </div>
+          )}
+          {modoRestriccion && (
+            <div className="text-xs text-yellow-700 mt-2 bg-yellow-50 p-2 rounded-lg border border-yellow-100 italic">
+              {restriccionParcial ? "Toca al segundo jugador para separarlos..." : "Toca a dos jugadores ya seleccionados para evitar que jueguen juntos."}
+            </div>
+          )}
+        </div>
+
         {/* Action Buttons */}
         <div className="flex gap-2">
           <button
             onClick={() => armar()}
-            className="flex-1 bg-blue-600 active:bg-blue-700 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+            className="flex-1 bg-blue-600 active:bg-blue-700 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 disabled:opacity-50"
+            disabled={modoRestriccion}
           >
             <Users size={20} /> Armar Original
           </button>
           <button
             onClick={() => armar(true)}
-            className="bg-purple-600 active:bg-purple-700 text-white p-3 rounded-xl px-4 shadow-md transition-all active:scale-95 flex items-center justify-center"
+            className="bg-purple-600 active:bg-purple-700 text-white p-3 rounded-xl px-4 shadow-md transition-all active:scale-95 flex items-center justify-center disabled:opacity-50"
             title="Añadir variación en los ratings para cambiar equipos"
+            disabled={modoRestriccion}
           >
             <Shuffle size={20} />
           </button>

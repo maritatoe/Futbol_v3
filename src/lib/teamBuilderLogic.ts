@@ -16,7 +16,8 @@ const ORDEN_PRIORIDAD = ['ARQ', 'DEF', 'MED', 'DEL']
 
 export function armarEquiposInteligente(
   jugadoresSeleccionados: Jugador[],
-  variacion: boolean = false
+  variacion: boolean = false,
+  incompatibilidades: Array<[string, string]> = []
 ): { equipoA: EquipoArmado, equipoB: EquipoArmado, diferencia: number } {
 
   if (jugadoresSeleccionados.length < 2) {
@@ -44,6 +45,54 @@ export function armarEquiposInteligente(
 
   const equipoA: JugadorAsignado[] = []
   const equipoB: JugadorAsignado[] = []
+
+  // PASO 0 - Asignaciones forzadas por Incompatibilidad (Grafo Bipartito)
+  const graph: Record<string, string[]> = {}
+  for (const [p1, p2] of incompatibilidades) {
+    if (!graph[p1]) graph[p1] = []
+    if (!graph[p2]) graph[p2] = []
+    graph[p1].push(p2)
+    graph[p2].push(p1)
+  }
+
+  const color: Record<string, 0 | 1> = {}
+  for (const node of Object.keys(graph)) {
+    if (!(node in color)) {
+      const q: string[] = [node]
+      color[node] = 0 // Equipo A
+      let head = 0
+      while (head < q.length) {
+        const curr = q[head++]
+        for (const neighbor of graph[curr]) {
+          if (!(neighbor in color)) {
+            color[neighbor] = color[curr] === 0 ? 1 : 0
+            q.push(neighbor)
+          } else if (color[neighbor] === color[curr]) {
+            throw new Error('Restricciones imposibles de cumplir: se formó un circuito de incompatibilidades cruzado.')
+          }
+        }
+      }
+    }
+  }
+
+  const preassignedA = Object.keys(color).filter(id => color[id] === 0)
+  const preassignedB = Object.keys(color).filter(id => color[id] === 1)
+
+  if (preassignedA.length > jugadoresPorEquipo || preassignedB.length > jugadoresPorEquipo) {
+    throw new Error('Restricciones imposibles de cumplir: desbordan la capacidad de un equipo.')
+  }
+
+  // Mover preasignados a sus equipos
+  const moverPreasignado = (id: string, eq: JugadorAsignado[]) => {
+    const idx = jugadoresDisponibles.findIndex(j => j.id === id)
+    if (idx !== -1) {
+      const j = jugadoresDisponibles.splice(idx, 1)[0]
+      eq.push({ ...j, posicion_asignada: j.posiciones[0] || 'MED' })
+    }
+  }
+
+  for (const id of preassignedA) moverPreasignado(id, equipoA)
+  for (const id of preassignedB) moverPreasignado(id, equipoB)
 
   // Calcular ratings acumulados actuales
   const sumA = () => equipoA.reduce((s, j) => s + j.rating, 0)
@@ -95,6 +144,11 @@ export function armarEquiposInteligente(
     swappeado = false
     for (let i = 0; i < equipoA.length; i++) {
       for (let j = 0; j < equipoB.length; j++) {
+
+        // REGLA CLAVE: Nunca intercambiar un jugador si está afectado por una restricción de separación
+        if ((equipoA[i].id in graph) || (equipoB[j].id in graph)) {
+          continue;
+        }
 
         // REGLA CLAVE: Nunca intercambiar un Arquero (ARQ) por un jugador de campo.
         // Si uno es ARQ, el otro debe ser ARQ también para poder swappear.
