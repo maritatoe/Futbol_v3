@@ -126,7 +126,7 @@ export default function Historial() {
                       onClick={() => navigate('/puntuar/' + p.id)}
                       className="w-full bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
                     >
-                      <ClipboardCheck size={20} /> Cargar Puntuaciones
+                      <ClipboardCheck size={20} /> Cargar Resultado y Puntuaciones
                     </button>
                   </div>
                 )}

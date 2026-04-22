@@ -26,10 +26,11 @@ export default function ArmarPartido() {
   }, [])
 
   async function fetchActivos() {
-    const { data } = await supabase.from('jugadores').select('*').eq('activo', true).order('rating', { ascending: false })
+    const { data } = await supabase.from('jugadores').select('*').eq('activo', true).eq('is_archived', false).order('rating', { ascending: false })
     if (data) {
       setActivos(data)
-      // Por defecto seleccionar los mejores N según la formación actual para facilitar? Mejor no, dejar que el usuario seleccione.
+    } else {
+      setActivos([])
     }
     setLoading(false)
   }
@@ -178,8 +179,8 @@ export default function ArmarPartido() {
             </div>
           )}
           {modoRestriccion && (
-            <div className="text-xs text-yellow-700 mt-2 bg-yellow-50 p-2 rounded-lg border border-yellow-100 italic">
-              {restriccionParcial ? "Toca al segundo jugador para separarlos..." : "Toca a dos jugadores ya seleccionados para evitar que jueguen juntos."}
+            <div className="text-sm text-yellow-700 mt-2 bg-yellow-50 p-2 rounded-lg border border-yellow-100 italic">
+              {restriccionParcial ? "Tocá al segundo jugador para mandarlo a la Juve..." : "Tocá a dos jugadores para evitar que jueguen juntos, el primero que toques va al Barsa y el segundo a la Juve."}
             </div>
           )}
         </div>

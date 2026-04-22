@@ -11,8 +11,8 @@ export default function PuntuarPartido() {
   const [puntajes, setPuntajes] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [golesBarsa, setGolesBarsa] = useState(0)
-  const [golesJuve, setGolesJuve] = useState(0)
+  const [golesBarsa, setGolesBarsa] = useState<number | string>('')
+  const [golesJuve, setGolesJuve] = useState<number | string>('')
 
   useEffect(() => {
     fetchParticipantes()
@@ -70,8 +70,8 @@ export default function PuntuarPartido() {
 
       // Guardar marcador del partido
       await supabase.from('partidos').update({
-        goles_barsa: golesBarsa,
-        goles_juve: golesJuve
+        goles_barsa: Number(golesBarsa) || 0,
+        goles_juve: Number(golesJuve) || 0
       }).eq('id', partidoId!)
 
       // Actualizar composición de equipos (por si hubo swaps)
@@ -140,36 +140,56 @@ export default function PuntuarPartido() {
     <div className="p-4 pb-24">
       {/* Marcador */}
       <div className="bg-white rounded-xl shadow-sm border p-4 mb-6">
-        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider text-center mb-4">RESULTADO DEL PARTIDO</h3>
-        <div className="flex items-center justify-center gap-3">
-          <div className="flex flex-col items-center gap-1">
+        <h3 className="text-lg font-bold text-gray-500 uppercase tracking-wider text-center mb-4">RESULTADO DEL PARTIDO</h3>
+        <div className="flex items-center justify-center gap-4">
+          <div className="flex flex-col items-center gap-2">
             <span className="text-sm font-bold text-blue-800">BARSA</span>
-            <input
-              type="number"
-              min="0"
-              max="99"
-              value={golesBarsa}
-              onChange={(e) => setGolesBarsa(Math.max(0, parseInt(e.target.value) || 0))}
-              className="w-16 h-14 text-center text-2xl font-black border-2 border-blue-300 rounded-xl bg-blue-50 text-blue-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-            />
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setGolesBarsa(prev => Math.max(0, (Number(prev) || 0) - 1))}
+                className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-black flex items-center justify-center text-xl hover:bg-blue-200 active:scale-95 transition-all shadow-sm"
+              >-</button>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={golesBarsa}
+                onChange={(e) => setGolesBarsa(e.target.value.replace(/\D/g, ''))}
+                className="w-16 h-16 text-center text-3xl font-black border-2 border-blue-300 rounded-xl bg-blue-50 text-blue-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all shadow-inner"
+              />
+              <button 
+                onClick={() => setGolesBarsa(prev => (Number(prev) || 0) + 1)}
+                className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-black flex items-center justify-center text-xl hover:bg-blue-200 active:scale-95 transition-all shadow-sm"
+              >+</button>
+            </div>
           </div>
-          <span className="text-2xl font-black text-gray-300 mt-5">-</span>
-          <div className="flex flex-col items-center gap-1">
+          <span className="text-3xl font-black text-gray-300 mt-6">-</span>
+          <div className="flex flex-col items-center gap-2">
             <span className="text-sm font-bold text-orange-800">JUVE</span>
-            <input
-              type="number"
-              min="0"
-              max="99"
-              value={golesJuve}
-              onChange={(e) => setGolesJuve(Math.max(0, parseInt(e.target.value) || 0))}
-              className="w-16 h-14 text-center text-2xl font-black border-2 border-orange-300 rounded-xl bg-orange-50 text-orange-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
-            />
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setGolesJuve(prev => Math.max(0, (Number(prev) || 0) - 1))}
+                className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-xl hover:bg-orange-200 active:scale-95 transition-all shadow-sm"
+              >-</button>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={golesJuve}
+                onChange={(e) => setGolesJuve(e.target.value.replace(/\D/g, ''))}
+                className="w-16 h-16 text-center text-3xl font-black border-2 border-orange-300 rounded-xl bg-orange-50 text-orange-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all shadow-inner"
+              />
+              <button 
+                onClick={() => setGolesJuve(prev => (Number(prev) || 0) + 1)}
+                className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-xl hover:bg-orange-200 active:scale-95 transition-all shadow-sm"
+              >+</button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="bg-blue-600 text-white rounded-xl p-4 mb-6 shadow-md">
-        <h2 className="text-lg font-bold">Post Partido</h2>
+        <h2 className="text-lg font-bold">CALIFICA A LOS JUGADORES</h2>
         <p className="text-sm text-blue-100 mt-1">
           Califica el rendimiento de cada jugador. Esto afectará su rating general según el algoritmo dinámico. Si algún jugador cambió de equipo puedes moverlo con las flechitas <ArrowLeftRight size={14} className="inline -mt-0.5 mx-0.5 text-blue-200" /> al costado de su nombre.
         </p>
