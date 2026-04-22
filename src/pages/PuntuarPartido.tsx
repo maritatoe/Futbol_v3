@@ -61,9 +61,9 @@ export default function PuntuarPartido() {
       if (errInsert) {
         // Podría fallar por UNIQUE constraint si ya se puntuaron
         if (errInsert.code === '23505') {
-            alert('Este partido ya fue puntuado.')
-            navigate('/ranking')
-            return
+          alert('Este partido ya fue puntuado.')
+          navigate('/ranking')
+          return
         }
         throw errInsert
       }
@@ -123,7 +123,7 @@ export default function PuntuarPartido() {
               return (
                 <button
                   key={num}
-                  onClick={() => setPuntajes({...puntajes, [j.jugador_id]: num})}
+                  onClick={() => setPuntajes({ ...puntajes, [j.jugador_id]: num })}
                   className={`flex-1 py-3 text-sm sm:text-base font-bold border-r border-gray-200 last:border-r-0 transition-colors ${isSelected ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 active:bg-gray-200'}`}
                 >
                   {num}
@@ -145,7 +145,7 @@ export default function PuntuarPartido() {
           <div className="flex flex-col items-center gap-2">
             <span className="text-sm font-bold text-blue-800">BARSA</span>
             <div className="flex items-center gap-2">
-              <button 
+              <button
                 onClick={() => setGolesBarsa(prev => Math.max(0, (Number(prev) || 0) - 1))}
                 className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-black flex items-center justify-center text-xl hover:bg-blue-200 active:scale-95 transition-all shadow-sm"
               >-</button>
@@ -157,7 +157,7 @@ export default function PuntuarPartido() {
                 onChange={(e) => setGolesBarsa(e.target.value.replace(/\D/g, ''))}
                 className="w-16 h-16 text-center text-3xl font-black border-2 border-blue-300 rounded-xl bg-blue-50 text-blue-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all shadow-inner"
               />
-              <button 
+              <button
                 onClick={() => setGolesBarsa(prev => (Number(prev) || 0) + 1)}
                 className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-black flex items-center justify-center text-xl hover:bg-blue-200 active:scale-95 transition-all shadow-sm"
               >+</button>
@@ -167,7 +167,7 @@ export default function PuntuarPartido() {
           <div className="flex flex-col items-center gap-2">
             <span className="text-sm font-bold text-orange-800">JUVE</span>
             <div className="flex items-center gap-2">
-              <button 
+              <button
                 onClick={() => setGolesJuve(prev => Math.max(0, (Number(prev) || 0) - 1))}
                 className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-xl hover:bg-orange-200 active:scale-95 transition-all shadow-sm"
               >-</button>
@@ -179,7 +179,7 @@ export default function PuntuarPartido() {
                 onChange={(e) => setGolesJuve(e.target.value.replace(/\D/g, ''))}
                 className="w-16 h-16 text-center text-3xl font-black border-2 border-orange-300 rounded-xl bg-orange-50 text-orange-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all shadow-inner"
               />
-              <button 
+              <button
                 onClick={() => setGolesJuve(prev => (Number(prev) || 0) + 1)}
                 className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-xl hover:bg-orange-200 active:scale-95 transition-all shadow-sm"
               >+</button>
@@ -191,22 +191,22 @@ export default function PuntuarPartido() {
       <div className="bg-blue-600 text-white rounded-xl p-4 mb-6 shadow-md">
         <h2 className="text-lg font-bold">CALIFICA A LOS JUGADORES</h2>
         <p className="text-sm text-blue-100 mt-1 mb-2">
-          Calificá el rendimiento de cada jugador. Esto afectará su rating general según el algoritmo dinámico.
+          Calificá el rendimiento de cada jugador, tené en cuenta queafectará su rating general.
         </p>
         <p className="text-sm text-blue-100">
-          Si algún jugador cambió de equipo puedes moverlo con las flechitas <ArrowLeftRight size={14} className="inline -mt-0.5 mx-0.5 text-blue-200" /> al costado de su nombre.
+          Si algún jugador cambió de equipo podés moverlo con las flechitas <ArrowLeftRight size={14} className="inline -mt-0.5 mx-0.5 text-blue-200" /> al costado de su nombre.
         </p>
       </div>
 
       <RenderEquipo eq={equipoA} color="border-blue-500" title="Barsa" />
       <RenderEquipo eq={equipoB} color="border-orange-500" title="Juve" />
 
-      <button 
+      <button
         onClick={guardarPuntajes}
         disabled={saving}
         className="w-full bg-green-500 hover:bg-green-600 text-white font-bold p-4 rounded-xl shadow-lg border-b-4 border-green-700 active:translate-y-1 active:border-b-0 flex justify-center items-center gap-2 transition-all disabled:opacity-50 disabled:active:translate-y-0 disabled:active:border-b-4"
       >
-        {saving ? 'Guardando/Procesando...' : <><CheckCircle2 size={24}/> Finalizar y Recalcular</>}
+        {saving ? 'Guardando/Procesando...' : <><CheckCircle2 size={24} /> Finalizar y Recalcular</>}
       </button>
     </div>
   )

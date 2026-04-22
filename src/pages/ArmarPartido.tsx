@@ -114,7 +114,7 @@ export default function ArmarPartido() {
   return (
     <div className="p-4 pb-24">
       <div className="mb-4">
-        <h2 className="text-xl font-bold text-gray-800 mb-2">Armar Partido</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">ARMAR PARTIDO</h2>
 
         <div className="flex justify-between items-center mb-2">
           <span className="font-semibold text-gray-700 text-sm">Jugadores</span>
@@ -162,20 +162,20 @@ export default function ArmarPartido() {
           >
             <Zap size={18} /> {modoRestriccion ? "Finalizar Separaciones" : "Definir Separaciones (No juegan juntos)"}
           </button>
-          
+
           {restricciones.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
-               {restricciones.map((r, idx) => {
-                 const p1 = activos.find(a => a.id === r[0])?.nombre || '?'
-                 const p2 = activos.find(a => a.id === r[1])?.nombre || '?'
-                 return (
-                   <div key={idx} className="flex items-center gap-1 bg-yellow-50 border border-yellow-200 text-yellow-800 px-2 py-1 rounded-lg text-xs font-semibold shadow-sm">
-                     <span>{p1}</span> <Zap size={12} className="text-yellow-500" /> <span>{p2}</span>
-                     <button onClick={() => setRestricciones(restricciones.filter((_, i) => i !== idx))} className="ml-1 p-0.5 hover:bg-yellow-200 rounded-full text-yellow-600 transition-colors"><X size={12}/></button>
-                   </div>
-                 )
-               })}
-               <button onClick={() => setRestricciones([])} className="text-xs text-gray-500 underline ml-2 font-medium">Limpiar Todas</button>
+              {restricciones.map((r, idx) => {
+                const p1 = activos.find(a => a.id === r[0])?.nombre || '?'
+                const p2 = activos.find(a => a.id === r[1])?.nombre || '?'
+                return (
+                  <div key={idx} className="flex items-center gap-1 bg-yellow-50 border border-yellow-200 text-yellow-800 px-2 py-1 rounded-lg text-xs font-semibold shadow-sm">
+                    <span>{p1}</span> <Zap size={12} className="text-yellow-500" /> <span>{p2}</span>
+                    <button onClick={() => setRestricciones(restricciones.filter((_, i) => i !== idx))} className="ml-1 p-0.5 hover:bg-yellow-200 rounded-full text-yellow-600 transition-colors"><X size={12} /></button>
+                  </div>
+                )
+              })}
+              <button onClick={() => setRestricciones([])} className="text-xs text-gray-500 underline ml-2 font-medium">Limpiar Todas</button>
             </div>
           )}
           {modoRestriccion && (
@@ -192,7 +192,7 @@ export default function ArmarPartido() {
             className="flex-1 bg-blue-600 active:bg-blue-700 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 disabled:opacity-50"
             disabled={modoRestriccion}
           >
-            <Users size={20} /> Armar Original
+            <Users size={20} /> Generar Partido
           </button>
           <button
             onClick={() => armar(true)}
