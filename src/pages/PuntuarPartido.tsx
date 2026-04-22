@@ -11,8 +11,8 @@ export default function PuntuarPartido() {
   const [puntajes, setPuntajes] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [golesBarsa, setGolesBarsa] = useState<number | string>('')
-  const [golesJuve, setGolesJuve] = useState<number | string>('')
+  const [golesBarsa, setGolesBarsa] = useState<number | string>(0)
+  const [golesJuve, setGolesJuve] = useState<number | string>(0)
 
   useEffect(() => {
     fetchParticipantes()
@@ -139,52 +139,75 @@ export default function PuntuarPartido() {
   return (
     <div className="p-4 pb-24">
       {/* Marcador */}
-      <div className="bg-white rounded-xl shadow-sm border p-4 mb-6">
-        <h3 className="text-lg font-bold text-gray-500 uppercase tracking-wider text-center mb-4">RESULTADO DEL PARTIDO</h3>
-        <div className="flex items-center justify-center gap-4">
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-sm font-bold text-blue-800">BARSA</span>
-            <div className="flex items-center gap-2">
+      <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6 mb-6">
+        <h3 className="text-lg font-bold text-gray-500 uppercase tracking-wider text-center mb-6">RESULTADO DEL PARTIDO</h3>
+        <div className="flex items-center justify-between gap-2 sm:gap-4 max-w-md mx-auto">
+          
+          {/* Barsa Column */}
+          <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
+            <span className="text-sm font-extrabold text-blue-800 tracking-wide">BARSA</span>
+            <div className="flex items-center justify-center gap-1 sm:gap-3 w-full">
               <button
                 onClick={() => setGolesBarsa(prev => Math.max(0, (Number(prev) || 0) - 1))}
-                className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-black flex items-center justify-center text-xl hover:bg-blue-200 active:scale-95 transition-all shadow-sm"
-              >-</button>
+                className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-full bg-blue-100 text-blue-600 font-black flex items-center justify-center text-lg sm:text-xl hover:bg-blue-200 active:scale-95 transition-all shadow-sm"
+              >
+                -
+              </button>
               <input
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
                 value={golesBarsa}
-                onChange={(e) => setGolesBarsa(e.target.value.replace(/\D/g, ''))}
-                className="w-16 h-16 text-center text-3xl font-black border-2 border-blue-300 rounded-xl bg-blue-50 text-blue-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all shadow-inner"
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  setGolesBarsa(val === '' ? 0 : parseInt(val, 10));
+                }}
+                className="w-12 h-12 sm:w-16 sm:h-16 text-center text-2xl sm:text-3xl font-black border-2 border-blue-200 rounded-xl bg-blue-50/50 text-blue-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all shadow-inner"
               />
               <button
                 onClick={() => setGolesBarsa(prev => (Number(prev) || 0) + 1)}
-                className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-black flex items-center justify-center text-xl hover:bg-blue-200 active:scale-95 transition-all shadow-sm"
-              >+</button>
+                className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-full bg-blue-100 text-blue-600 font-black flex items-center justify-center text-lg sm:text-xl hover:bg-blue-200 active:scale-95 transition-all shadow-sm"
+              >
+                +
+              </button>
             </div>
           </div>
-          <span className="text-3xl font-black text-gray-300 mt-6">-</span>
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-sm font-bold text-orange-800">JUVE</span>
-            <div className="flex items-center gap-2">
+
+          {/* Separator */}
+          <div className="flex items-center justify-center shrink-0 mt-8">
+            <div className="w-3 sm:w-4 h-[3px] rounded-full bg-gray-300"></div>
+          </div>
+
+          {/* Juve Column */}
+          <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
+            <span className="text-sm font-extrabold text-orange-800 tracking-wide">JUVE</span>
+            <div className="flex items-center justify-center gap-1 sm:gap-3 w-full">
               <button
                 onClick={() => setGolesJuve(prev => Math.max(0, (Number(prev) || 0) - 1))}
-                className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-xl hover:bg-orange-200 active:scale-95 transition-all shadow-sm"
-              >-</button>
+                className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-lg sm:text-xl hover:bg-orange-200 active:scale-95 transition-all shadow-sm"
+              >
+                -
+              </button>
               <input
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
                 value={golesJuve}
-                onChange={(e) => setGolesJuve(e.target.value.replace(/\D/g, ''))}
-                className="w-16 h-16 text-center text-3xl font-black border-2 border-orange-300 rounded-xl bg-orange-50 text-orange-800 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all shadow-inner"
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  setGolesJuve(val === '' ? 0 : parseInt(val, 10));
+                }}
+                className="w-12 h-12 sm:w-16 sm:h-16 text-center text-2xl sm:text-3xl font-black border-2 border-orange-200 rounded-xl bg-orange-50/50 text-orange-800 outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all shadow-inner"
               />
               <button
                 onClick={() => setGolesJuve(prev => (Number(prev) || 0) + 1)}
-                className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-xl hover:bg-orange-200 active:scale-95 transition-all shadow-sm"
-              >+</button>
+                className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-full bg-orange-100 text-orange-600 font-black flex items-center justify-center text-lg sm:text-xl hover:bg-orange-200 active:scale-95 transition-all shadow-sm"
+              >
+                +
+              </button>
             </div>
           </div>
+
         </div>
       </div>
 
