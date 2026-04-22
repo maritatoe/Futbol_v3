@@ -117,7 +117,7 @@ export default function ArmarPartido() {
         <h2 className="text-xl font-bold text-gray-800 mb-2">ARMAR PARTIDO</h2>
 
         <div className="flex justify-between items-center mb-2">
-          <span className="font-semibold text-gray-700 text-sm">Jugadores</span>
+          <span className="font-semibold text-gray-700 text-sm">Seleccioná los Jugadores</span>
           <span className={clsx("font-bold text-sm px-2 py-0.5 rounded-full", seleccionados.size > 0 && seleccionados.size % 2 === 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")}>
             Seleccionados: {seleccionados.size} {seleccionados.size > 0 && seleccionados.size % 2 === 0 ? `(${seleccionados.size / 2}v${seleccionados.size / 2})` : '(Debe ser par)'}
           </span>
@@ -192,7 +192,7 @@ export default function ArmarPartido() {
             className="flex-1 bg-blue-600 active:bg-blue-700 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 disabled:opacity-50"
             disabled={modoRestriccion}
           >
-            <Users size={20} /> Generar Partido
+            <Users size={20} /> Generar Equipos
           </button>
           <button
             onClick={() => armar(true)}
