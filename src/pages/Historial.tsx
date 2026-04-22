@@ -2,13 +2,19 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { ChevronDown, ChevronUp, Calendar, ClipboardCheck } from 'lucide-react'
+import { ChevronDown, ChevronUp, Calendar, ClipboardCheck, Trash2, AlertTriangle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Historial() {
   const [partidos, setPartidos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  
+  // States for delete functionality
+  const [matchToDelete, setMatchToDelete] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [notification, setNotification] = useState<string | null>(null)
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -35,10 +41,31 @@ export default function Historial() {
     setLoading(false)
   }
 
+  async function handleDelete() {
+    if (!matchToDelete) return
+    setIsDeleting(true)
+    try {
+      const { error } = await supabase.from('partidos').delete().eq('id', matchToDelete)
+      if (!error) {
+        setPartidos(prev => prev.filter(p => p.id !== matchToDelete))
+        setMatchToDelete(null)
+        setNotification('Partido eliminado')
+        setTimeout(() => setNotification(null), 3000)
+      } else {
+        console.error('Error deleting match:', error)
+        alert('Hubo un error al eliminar el partido')
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   if (loading) return <div className="p-4 text-center">Cargando historial...</div>
 
   return (
-    <div className="p-4 pb-24">
+    <div className="p-4 pb-24 relative">
       <h2 className="text-xl font-bold text-gray-800 mb-6">Historial de Partidos</h2>
       
       <div className="space-y-4">
@@ -86,7 +113,19 @@ export default function Historial() {
                     )}
                   </div>
                 </div>
-                <div className="text-gray-400">
+                <div className="text-gray-400 flex flex-col items-center gap-2">
+                  {!isPuntuado && (
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setMatchToDelete(p.id)
+                      }}
+                      className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors mb-1"
+                      title="Cancelar Partido"
+                    >
+                      <Trash2 size={20} />
+                    </div>
+                  )}
                   {isExpanded ? <ChevronUp size={24}/> : <ChevronDown size={24}/>}
                 </div>
               </button>
@@ -121,12 +160,18 @@ export default function Historial() {
                 </div>
 
                 {!isPuntuado && (
-                  <div className="px-4 pb-4">
+                  <div className="px-4 pb-4 flex flex-col gap-3">
                     <button
                       onClick={() => navigate('/puntuar/' + p.id)}
                       className="w-full bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
                     >
                       <ClipboardCheck size={20} /> Cargar Resultado y Puntuaciones
+                    </button>
+                    <button
+                      onClick={() => setMatchToDelete(p.id)}
+                      className="w-full bg-white hover:bg-red-50 text-red-600 font-semibold py-3 rounded-xl border-2 border-red-100 hover:border-red-200 flex items-center justify-center gap-2 transition-all"
+                    >
+                      <Trash2 size={20} /> Cancelar Partido
                     </button>
                   </div>
                 )}
@@ -141,6 +186,47 @@ export default function Historial() {
           </div>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      {matchToDelete && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 mb-4 text-red-600">
+              <div className="bg-red-100 p-2 rounded-full">
+                <AlertTriangle size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Cancelar Partido</h3>
+            </div>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              ¿Querés eliminar este partido? Como aún no fue puntuado, esto no afectará el ranking de los jugadores.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setMatchToDelete(null)}
+                disabled={isDeleting}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 rounded-xl transition-colors"
+              >
+                Volver
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2"
+              >
+                {isDeleting ? 'Eliminando...' : 'Eliminar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notification Toast */}
+      {notification && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg z-50 flex items-center gap-2 animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <Trash2 size={16} className="text-red-400" />
+          <span className="font-medium">{notification}</span>
+        </div>
+      )}
     </div>
   )
 }
