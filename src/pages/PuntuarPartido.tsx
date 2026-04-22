@@ -190,8 +190,11 @@ export default function PuntuarPartido() {
 
       <div className="bg-blue-600 text-white rounded-xl p-4 mb-6 shadow-md">
         <h2 className="text-lg font-bold">CALIFICA A LOS JUGADORES</h2>
-        <p className="text-sm text-blue-100 mt-1">
-          Califica el rendimiento de cada jugador. Esto afectará su rating general según el algoritmo dinámico. Si algún jugador cambió de equipo puedes moverlo con las flechitas <ArrowLeftRight size={14} className="inline -mt-0.5 mx-0.5 text-blue-200" /> al costado de su nombre.
+        <p className="text-sm text-blue-100 mt-1 mb-2">
+          Calificá el rendimiento de cada jugador. Esto afectará su rating general según el algoritmo dinámico.
+        </p>
+        <p className="text-sm text-blue-100">
+          Si algún jugador cambió de equipo puedes moverlo con las flechitas <ArrowLeftRight size={14} className="inline -mt-0.5 mx-0.5 text-blue-200" /> al costado de su nombre.
         </p>
       </div>
 
