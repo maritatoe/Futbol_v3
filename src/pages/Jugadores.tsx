@@ -3,10 +3,12 @@ import { supabase } from '../lib/supabase'
 import { Database } from '../types/database.types'
 import { Plus, X, Edit, Power, Trash2 } from 'lucide-react'
 import clsx from 'clsx'
+import { useAuth } from '../contexts/AuthContext'
 
 type Jugador = Database['public']['Tables']['jugadores']['Row']
 
 export default function Jugadores() {
+  const { user } = useAuth()
   const [jugadores, setJugadores] = useState<Jugador[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -40,7 +42,7 @@ export default function Jugadores() {
         fetchJugadores()
       })
     } else {
-      supabase.from('jugadores').insert({ nombre, posiciones, puntaje_base: puntajeBase, rating: puntajeBase }).then(() => {
+      supabase.from('jugadores').insert({ nombre, posiciones, puntaje_base: puntajeBase, rating: puntajeBase, user_id: user?.id }).then(() => {
         setShowModal(false)
         fetchJugadores()
       })

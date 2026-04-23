@@ -1,8 +1,16 @@
-import { Outlet, NavLink } from 'react-router-dom'
-import { Users, UserPlus, History, Trophy } from 'lucide-react'
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { Users, UserPlus, History, Trophy, LogOut } from 'lucide-react'
 import clsx from 'clsx'
+import { supabase } from '../../lib/supabase'
 
 export function AppLayout() {
+  const navigate = useNavigate()
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    navigate('/login')
+  }
+
   const navItems = [
     { to: '/jugadores', icon: Users, label: 'Jugadores' },
     { to: '/armar', icon: UserPlus, label: 'Armar' },
@@ -12,9 +20,12 @@ export function AppLayout() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 max-w-md mx-auto shadow-xl relative overflow-hidden sm:max-w-lg md:max-w-xl">
-      {/* Header Mobile Opcional */}
-      <header className="bg-blue-600 text-white p-4 shadow-md z-10 sticky top-0">
-        <h1 className="text-xl font-bold text-center tracking-wide">Soccer Match</h1>
+      {/* Header */}
+      <header className="bg-blue-600 text-white p-4 shadow-md z-10 sticky top-0 flex justify-between items-center">
+        <h1 className="text-xl font-bold tracking-wide">Soccer Match</h1>
+        <button onClick={handleLogout} className="text-blue-100 hover:text-white p-1 rounded-full transition-colors" title="Cerrar Sesión">
+          <LogOut size={20} />
+        </button>
       </header>
       
       {/* Main Content */}

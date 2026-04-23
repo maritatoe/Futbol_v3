@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { recalcularYActualizarRating } from '../lib/ratingLogic'
 import { CheckCircle2, ArrowLeftRight } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function PuntuarPartido() {
+  const { user } = useAuth()
   const { partidoId } = useParams()
   const navigate = useNavigate()
   const [jugadores, setJugadores] = useState<any[]>([])
@@ -53,7 +55,8 @@ export default function PuntuarPartido() {
       const inserts = Object.keys(puntajes).map(jid => ({
         partido_id: partidoId!,
         jugador_id: jid,
-        puntaje: puntajes[jid]
+        puntaje: puntajes[jid],
+        user_id: user?.id
       }))
 
       // Guardar rendimientos

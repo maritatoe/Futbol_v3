@@ -7,11 +7,21 @@ import ArmarPartido from './pages/ArmarPartido'
 import Historial from './pages/Historial'
 import Ranking from './pages/Ranking'
 import PuntuarPartido from './pages/PuntuarPartido'
+import Login from './pages/Login'
+import { useAuth } from './contexts/AuthContext'
 
 function App() {
+  const { session, loading } = useAuth()
+
+  if (loading) {
+    return <div className="min-h-screen bg-black flex items-center justify-center text-white">Cargando...</div>
+  }
+
   return (
     <Routes>
-      <Route path="/" element={<AppLayout />}>
+      <Route path="/login" element={session ? <Navigate to="/" replace /> : <Login />} />
+      
+      <Route path="/" element={session ? <AppLayout /> : <Navigate to="/login" replace />}>
         {/* Redirección por defecto */}
         <Route index element={<Navigate to="/jugadores" replace />} />
         
