@@ -6,6 +6,7 @@ import { Users, Shuffle, Save, AlertTriangle, Zap, X } from 'lucide-react'
 import clsx from 'clsx'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import toast from 'react-hot-toast'
 
 type Jugador = Database['public']['Tables']['jugadores']['Row']
 
@@ -83,7 +84,7 @@ export default function ArmarPartido() {
       user_id: user?.id
     }).select().single()
 
-    if (pErr || !partido) return alert('Error al crear partido')
+    if (pErr || !partido) return toast.error('Error al crear partido')
 
     const insertA = resultado.equipoA.jugadores.map(j => ({
       partido_id: partido.id,
@@ -103,13 +104,13 @@ export default function ArmarPartido() {
 
     const { error: eqErr } = await supabase.from('equipos_partido').insert([...insertA, ...insertB])
 
-    if (eqErr) alert('Error guardando jugadores: ' + eqErr.message)
+    if (eqErr) toast.error('Error guardando jugadores: ' + eqErr.message)
     else {
       // Limpiar estado para evitar duplicados si el usuario vuelve atrás
       setSeleccionados(new Set())
       setResultado(null)
       setBuildError(null)
-      alert('¡Partido guardado con éxito!')
+      toast.success('¡Partido guardado con éxito!')
       navigate('/historial')
     }
   }

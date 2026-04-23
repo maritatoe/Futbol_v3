@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate } from 'react-router-dom'
 import { AlertTriangle, LogIn, UserPlus } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -28,7 +29,7 @@ export default function Login() {
     const { error } = await supabase.auth.signUp({ email, password })
     if (error) setError(error.message)
     else {
-      alert('¡Cuenta creada exitosamente! Ya puedes iniciar sesión.')
+      toast.success('¡Cuenta creada exitosamente! Ya puedes iniciar sesión.')
     }
     setLoading(false)
   }
