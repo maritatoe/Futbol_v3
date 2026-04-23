@@ -29,11 +29,11 @@ export default function Login() {
       <div className="z-10 w-full max-w-md flex flex-col items-center gap-6">
         
         {/* Splash Logo */}
-        <div className="w-full flex justify-center mb-2">
+        <div className="w-full flex justify-center mb-10">
           <img 
             src="/siamofuori_logo.png" 
             alt="Siamo Fuori Logo" 
-            className="w-full object-contain filter drop-shadow-[0_0_15px_rgba(0,255,0,0.5)]"
+            className="w-[90%] object-contain filter drop-shadow-[0_0_15px_rgba(0,255,0,0.5)]"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
               // Fallback if image not found
@@ -50,7 +50,6 @@ export default function Login() {
 
         {/* Login Form */}
         <div className="w-full bg-gray-900/80 backdrop-blur-md p-6 rounded-3xl border border-gray-800 shadow-2xl">
-          <h2 className="text-xl font-bold text-center mb-6">Iniciar Sesión</h2>
           
           {error && (
             <div className="mb-4 p-3 bg-red-900/50 border border-red-500 rounded-xl text-red-200 text-sm flex gap-2 items-center">
