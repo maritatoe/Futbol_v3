@@ -7,8 +7,8 @@ export function AppLayout() {
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    // Forzamos la recarga completa para limpiar cualquier estado/caché en memoria
-    window.location.href = '/login'
+    // Forzamos la recarga completa en la raíz
+    window.location.href = '/'
   }
 
   const navItems = [
