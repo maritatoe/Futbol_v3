@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Users, Timer, BarChart3 } from 'lucide-react'
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
@@ -46,6 +46,34 @@ export default function Login() {
               }
             }}
           />
+        </div>
+
+        {/* Features */}
+        <div className="w-full flex items-center justify-between px-2 mb-10 text-center">
+          <div className="flex flex-col items-center gap-2 flex-1">
+            <Users className="text-[#39ff14] w-8 h-8 md:w-10 md:h-10" />
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-gray-200 leading-tight">
+              Equipos<br/>Parejos
+            </span>
+          </div>
+          
+          <div className="w-px h-10 bg-gradient-to-b from-transparent via-green-500/50 to-transparent"></div>
+          
+          <div className="flex flex-col items-center gap-2 flex-1">
+            <Timer className="text-[#39ff14] w-8 h-8 md:w-10 md:h-10" />
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-gray-200 leading-tight">
+              Rápido y<br/>Simple
+            </span>
+          </div>
+
+          <div className="w-px h-10 bg-gradient-to-b from-transparent via-green-500/50 to-transparent"></div>
+
+          <div className="flex flex-col items-center gap-2 flex-1">
+            <BarChart3 className="text-[#39ff14] w-8 h-8 md:w-10 md:h-10" />
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-gray-200 leading-tight">
+              Rendimiento<br/>Real
+            </span>
+          </div>
         </div>
 
         {/* Login Form */}
