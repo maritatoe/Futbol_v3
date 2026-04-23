@@ -118,9 +118,10 @@ export default function ArmarPartido() {
 
         <div className="flex justify-between items-center mb-2">
           <span className="font-semibold text-gray-700 text-sm">Seleccioná los Jugadores</span>
-          <span className={clsx("font-bold text-sm px-2 py-0.5 rounded-full", seleccionados.size > 0 && seleccionados.size % 2 === 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")}>
-            Seleccionados: {seleccionados.size} {seleccionados.size > 0 && seleccionados.size % 2 === 0 ? `(${seleccionados.size / 2}v${seleccionados.size / 2})` : '(Debe ser par)'}
-          </span>
+          <div className={clsx("font-bold text-sm px-3 py-1 rounded-xl text-center", seleccionados.size > 0 && seleccionados.size % 2 === 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")}>
+            <div>Seleccionados: {seleccionados.size}</div>
+            <div className="text-xs opacity-80">{seleccionados.size > 0 && seleccionados.size % 2 === 0 ? `(${seleccionados.size / 2}v${seleccionados.size / 2})` : '(Debe ser par)'}</div>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-4 max-h-48 overflow-y-auto p-1">
