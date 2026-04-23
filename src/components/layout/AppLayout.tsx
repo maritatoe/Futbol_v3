@@ -1,10 +1,9 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { Outlet, NavLink } from 'react-router-dom'
 import { Users, UserPlus, History, Trophy, LogOut } from 'lucide-react'
 import clsx from 'clsx'
 import { supabase } from '../../lib/supabase'
 
 export function AppLayout() {
-  const navigate = useNavigate()
 
   async function handleLogout() {
     await supabase.auth.signOut()
