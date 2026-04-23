@@ -3,10 +3,13 @@ import { supabase } from '../lib/supabase'
 import { Database } from '../types/database.types'
 import { Plus, X, Edit, Power, Trash2 } from 'lucide-react'
 import clsx from 'clsx'
+import { useAuth } from '../contexts/AuthContext'
+import toast from 'react-hot-toast'
 
 type Jugador = Database['public']['Tables']['jugadores']['Row']
 
 export default function Jugadores() {
+  const { user } = useAuth()
   const [jugadores, setJugadores] = useState<Jugador[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -31,7 +34,7 @@ export default function Jugadores() {
   }
 
   function handleAddOrEdit() {
-    if (!nombre.trim() || posiciones.length === 0) return alert('Nombre y al menos una posición requerida')
+    if (!nombre.trim() || posiciones.length === 0) return toast.error('Nombre y al menos una posición requerida')
 
     if (editingId) {
       supabase.from('jugadores').update({ nombre, posiciones, puntaje_base: puntajeBase, rating: puntajeBase }).eq('id', editingId).then(() => {
@@ -40,7 +43,7 @@ export default function Jugadores() {
         fetchJugadores()
       })
     } else {
-      supabase.from('jugadores').insert({ nombre, posiciones, puntaje_base: puntajeBase, rating: puntajeBase }).then(() => {
+      supabase.from('jugadores').insert({ nombre, posiciones, puntaje_base: puntajeBase, rating: puntajeBase, user_id: user?.id }).then(() => {
         setShowModal(false)
         fetchJugadores()
       })
@@ -53,10 +56,26 @@ export default function Jugadores() {
   }
 
   async function archiveJugador(j: Jugador) {
-    if (window.confirm(`¿Estás seguro de archivar a ${j.nombre}? No aparecerá en las listas pero su historial se mantiene.`)) {
-      await supabase.from('jugadores').update({ is_archived: true }).eq('id', j.id)
-      fetchJugadores()
-    }
+    toast((t) => (
+      <div className="flex flex-col gap-2">
+        <span className="font-bold text-gray-800">¿Archivar a {j.nombre}?</span>
+        <span className="text-xs text-gray-500 leading-tight">No aparecerá en las listas pero su historial se mantiene.</span>
+        <div className="flex justify-end gap-2 mt-2">
+          <button onClick={() => toast.dismiss(t.id)} className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-bold rounded-xl active:scale-95 transition-transform">Cancelar</button>
+          <button 
+            onClick={async () => {
+              toast.dismiss(t.id)
+              await supabase.from('jugadores').update({ is_archived: true }).eq('id', j.id)
+              fetchJugadores()
+              toast.success('Jugador archivado')
+            }} 
+            className="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-xl active:scale-95 transition-transform shadow-md"
+          >
+            Archivar
+          </button>
+        </div>
+      </div>
+    ), { duration: Infinity, position: 'top-center' })
   }
 
   function openEdit(j: Jugador) {

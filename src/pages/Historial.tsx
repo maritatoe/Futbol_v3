@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { ChevronDown, ChevronUp, Calendar, ClipboardCheck, Trash2, AlertTriangle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 export default function Historial() {
   const [partidos, setPartidos] = useState<any[]>([])
@@ -13,7 +14,6 @@ export default function Historial() {
   // States for delete functionality
   const [matchToDelete, setMatchToDelete] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [notification, setNotification] = useState<string | null>(null)
 
   const navigate = useNavigate()
 
@@ -49,11 +49,10 @@ export default function Historial() {
       if (!error) {
         setPartidos(prev => prev.filter(p => p.id !== matchToDelete))
         setMatchToDelete(null)
-        setNotification('Partido eliminado')
-        setTimeout(() => setNotification(null), 3000)
+        toast.success('Partido eliminado')
       } else {
         console.error('Error deleting match:', error)
-        alert('Hubo un error al eliminar el partido')
+        toast.error('Hubo un error al eliminar el partido')
       }
     } catch (err) {
       console.error(err)
@@ -220,13 +219,6 @@ export default function Historial() {
         </div>
       )}
 
-      {/* Notification Toast */}
-      {notification && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg z-50 flex items-center gap-2 animate-in slide-in-from-bottom-5 fade-in duration-300">
-          <Trash2 size={16} className="text-red-400" />
-          <span className="font-medium">{notification}</span>
-        </div>
-      )}
     </div>
   )
 }

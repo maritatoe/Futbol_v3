@@ -5,10 +5,13 @@ import { armarEquiposInteligente, EquipoArmado } from '../lib/teamBuilderLogic'
 import { Users, Shuffle, Save, AlertTriangle, Zap, X } from 'lucide-react'
 import clsx from 'clsx'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import toast from 'react-hot-toast'
 
 type Jugador = Database['public']['Tables']['jugadores']['Row']
 
 export default function ArmarPartido() {
+  const { user } = useAuth()
   const [activos, setActivos] = useState<Jugador[]>([])
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set())
   const [restricciones, setRestricciones] = useState<Array<[string, string]>>([])
@@ -77,34 +80,37 @@ export default function ArmarPartido() {
     if (!resultado) return
     const formacion = `${seleccionados.size / 2}v${seleccionados.size / 2}`
     const { data: partido, error: pErr } = await supabase.from('partidos').insert({
-      formacion
+      formacion,
+      user_id: user?.id
     }).select().single()
 
-    if (pErr || !partido) return alert('Error al crear partido')
+    if (pErr || !partido) return toast.error('Error al crear partido')
 
     const insertA = resultado.equipoA.jugadores.map(j => ({
       partido_id: partido.id,
       jugador_id: j.id,
       equipo: 'A' as const,
-      posicion_asignada: j.posicion_asignada
+      posicion_asignada: j.posicion_asignada,
+      user_id: user?.id
     }))
 
     const insertB = resultado.equipoB.jugadores.map(j => ({
       partido_id: partido.id,
       jugador_id: j.id,
       equipo: 'B' as const,
-      posicion_asignada: j.posicion_asignada
+      posicion_asignada: j.posicion_asignada,
+      user_id: user?.id
     }))
 
     const { error: eqErr } = await supabase.from('equipos_partido').insert([...insertA, ...insertB])
 
-    if (eqErr) alert('Error guardando jugadores: ' + eqErr.message)
+    if (eqErr) toast.error('Error guardando jugadores: ' + eqErr.message)
     else {
       // Limpiar estado para evitar duplicados si el usuario vuelve atrás
       setSeleccionados(new Set())
       setResultado(null)
       setBuildError(null)
-      alert('¡Partido guardado con éxito!')
+      toast.success('¡Partido guardado con éxito!')
       navigate('/historial')
     }
   }

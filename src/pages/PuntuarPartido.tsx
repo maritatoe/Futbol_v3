@@ -3,8 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { recalcularYActualizarRating } from '../lib/ratingLogic'
 import { CheckCircle2, ArrowLeftRight } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
+import toast from 'react-hot-toast'
 
 export default function PuntuarPartido() {
+  const { user } = useAuth()
   const { partidoId } = useParams()
   const navigate = useNavigate()
   const [jugadores, setJugadores] = useState<any[]>([])
@@ -53,7 +56,8 @@ export default function PuntuarPartido() {
       const inserts = Object.keys(puntajes).map(jid => ({
         partido_id: partidoId!,
         jugador_id: jid,
-        puntaje: puntajes[jid]
+        puntaje: puntajes[jid],
+        user_id: user?.id
       }))
 
       // Guardar rendimientos
@@ -61,7 +65,7 @@ export default function PuntuarPartido() {
       if (errInsert) {
         // Podría fallar por UNIQUE constraint si ya se puntuaron
         if (errInsert.code === '23505') {
-          alert('Este partido ya fue puntuado.')
+          toast.error('Este partido ya fue puntuado.')
           navigate('/ranking')
           return
         }
@@ -85,10 +89,10 @@ export default function PuntuarPartido() {
       // Recalcular ratings de cada participante
       await Promise.all(Object.keys(puntajes).map(jid => recalcularYActualizarRating(jid)))
 
-      alert('Puntajes guardados y rating actualizado')
+      toast.success('Puntajes guardados y rating actualizado')
       navigate('/ranking')
     } catch (err: any) {
-      alert('Error guardando puntajes: ' + err.message)
+      toast.error('Error guardando puntajes: ' + err.message)
     }
     setSaving(false)
   }

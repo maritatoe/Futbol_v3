@@ -19,6 +19,7 @@ export interface Database {
           activo: boolean
           is_archived: boolean
           created_at: string
+          user_id?: string
         }
         Insert: {
           id?: string
@@ -29,6 +30,7 @@ export interface Database {
           activo?: boolean
           is_archived?: boolean
           created_at?: string
+          user_id?: string
         }
         Update: {
           id?: string
@@ -39,6 +41,7 @@ export interface Database {
           activo?: boolean
           is_archived?: boolean
           created_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -49,6 +52,7 @@ export interface Database {
           formacion: string
           goles_barsa: number | null
           goles_juve: number | null
+          user_id?: string
         }
         Insert: {
           id?: string
@@ -56,6 +60,7 @@ export interface Database {
           formacion?: string
           goles_barsa?: number | null
           goles_juve?: number | null
+          user_id?: string
         }
         Update: {
           id?: string
@@ -63,6 +68,7 @@ export interface Database {
           formacion?: string
           goles_barsa?: number | null
           goles_juve?: number | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -73,6 +79,7 @@ export interface Database {
           jugador_id: string
           equipo: 'A' | 'B'
           posicion_asignada: string
+          user_id?: string
         }
         Insert: {
           id?: string
@@ -80,6 +87,7 @@ export interface Database {
           jugador_id: string
           equipo: 'A' | 'B'
           posicion_asignada: string
+          user_id?: string
         }
         Update: {
           id?: string
@@ -87,6 +95,7 @@ export interface Database {
           jugador_id?: string
           equipo?: 'A' | 'B'
           posicion_asignada?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -109,18 +118,21 @@ export interface Database {
           partido_id: string
           jugador_id: string
           puntaje: number
+          user_id?: string
         }
         Insert: {
           id?: string
           partido_id: string
           jugador_id: string
           puntaje: number
+          user_id?: string
         }
         Update: {
           id?: string
           partido_id?: string
           jugador_id?: string
           puntaje?: number
+          user_id?: string
         }
         Relationships: [
           {
