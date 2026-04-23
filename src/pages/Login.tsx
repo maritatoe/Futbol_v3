@@ -14,6 +14,10 @@ export default function Login() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
+    if (!email.trim() || !password.trim()) {
+      setError('Por favor, completá los datos')
+      return
+    }
     setLoading(true)
     setError(null)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -24,12 +28,16 @@ export default function Login() {
 
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault()
+    if (!email.trim() || !password.trim()) {
+      setError('Por favor, completá los datos para registrarte')
+      return
+    }
     setLoading(true)
     setError(null)
     const { error } = await supabase.auth.signUp({ email, password })
     if (error) setError(error.message)
     else {
-      toast.success('¡Cuenta creada exitosamente! Ya puedes iniciar sesión.')
+      toast.success('¡Registro exitoso! Por favor, revisá tu correo y hacé clic en el enlace para activar tu cuenta.', { duration: 6000 })
     }
     setLoading(false)
   }
