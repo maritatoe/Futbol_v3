@@ -33,7 +33,7 @@ export default function Login() {
           <img 
             src="/siamofuori_logo.png" 
             alt="Siamo Fuori Logo" 
-            className="w-[65%] max-w-[200px] object-contain filter drop-shadow-[0_0_15px_rgba(0,255,0,0.5)]"
+            className="w-full object-contain filter drop-shadow-[0_0_15px_rgba(0,255,0,0.5)]"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
               // Fallback if image not found
