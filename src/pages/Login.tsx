@@ -38,6 +38,11 @@ export default function Login() {
     setError(null)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        // Esto le dice a Supabase que te devuelva a la URL exacta en la que estás ahora
+        // (ya sea localhost, la rama principal de vercel, o una rama paralela)
+        redirectTo: `${window.location.origin}/`
+      }
     })
     if (error) setError(error.message)
     setLoading(false)
@@ -48,14 +53,14 @@ export default function Login() {
       {/* Background ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-green-500/20 blur-[100px] rounded-full pointer-events-none"></div>
 
-      <div className="z-10 w-full max-w-md flex flex-col items-center gap-8">
+      <div className="z-10 w-full max-w-md flex flex-col items-center gap-6">
         
         {/* Splash Logo */}
-        <div className="w-full flex justify-center mb-8">
+        <div className="w-full flex justify-center mb-2">
           <img 
             src="/siamofuori_logo.png" 
             alt="Siamo Fuori Logo" 
-            className="w-4/5 object-contain filter drop-shadow-[0_0_15px_rgba(0,255,0,0.5)]"
+            className="w-[65%] max-w-[200px] object-contain filter drop-shadow-[0_0_15px_rgba(0,255,0,0.5)]"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
               // Fallback if image not found
@@ -71,8 +76,8 @@ export default function Login() {
         </div>
 
         {/* Login Form */}
-        <div className="w-full bg-gray-900/80 backdrop-blur-md p-6 rounded-3xl border border-gray-800 shadow-2xl">
-          <h2 className="text-xl font-bold text-center mb-6">Iniciar Sesión</h2>
+        <div className="w-full bg-gray-900/80 backdrop-blur-md p-5 rounded-3xl border border-gray-800 shadow-2xl">
+          <h2 className="text-xl font-bold text-center mb-5">Iniciar Sesión</h2>
           
           {error && (
             <div className="mb-4 p-3 bg-red-900/50 border border-red-500 rounded-xl text-red-200 text-sm flex gap-2 items-center">
@@ -81,47 +86,45 @@ export default function Login() {
             </div>
           )}
 
-          <form className="space-y-4">
+          <form className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Correo Electrónico</label>
               <input 
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="tu@email.com"
+                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-sm"
+                placeholder="Correo electrónico"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Contraseña</label>
               <input 
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="••••••••"
+                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-sm"
+                placeholder="Contraseña"
                 required
               />
             </div>
 
-            <div className="pt-4 space-y-3">
+            <div className="pt-3 space-y-3">
               <button 
                 onClick={handleLogin}
                 disabled={loading}
-                className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 text-sm"
               >
-                <LogIn size={20} />
+                <LogIn size={18} />
                 Ingresar
               </button>
               
               <button 
                 onClick={handleSignUp}
                 disabled={loading}
-                className="w-full bg-transparent border border-gray-600 hover:border-gray-400 text-gray-300 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                className="w-full bg-transparent border border-gray-600 hover:border-gray-400 text-gray-300 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 text-sm"
               >
-                <UserPlus size={20} />
+                <UserPlus size={18} />
                 Registrarse
               </button>
 
@@ -138,7 +141,7 @@ export default function Login() {
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-sm"
+                className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-sm text-sm"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
