@@ -11,7 +11,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <AuthProvider>
       <BrowserRouter>
         <App />
-        <Toaster position="bottom-center" />
+        <Toaster 
+          position="top-center" 
+          containerStyle={{
+            top: '50%',
+            bottom: 'auto',
+            transform: 'translateY(-50%)'
+          }}
+        />
       </BrowserRouter>
     </AuthProvider>
   </React.StrictMode>,

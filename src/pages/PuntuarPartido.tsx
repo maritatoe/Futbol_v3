@@ -146,7 +146,7 @@ export default function PuntuarPartido() {
       <div className="bg-white rounded-xl shadow-sm border p-4 sm:p-6 mb-6">
         <h3 className="text-lg font-bold text-gray-500 uppercase tracking-wider text-center mb-6">RESULTADO DEL PARTIDO</h3>
         <div className="flex items-center justify-between gap-2 sm:gap-4 max-w-md mx-auto">
-          
+
           {/* Barsa Column */}
           <div className="flex flex-col items-center gap-3 flex-1 min-w-0">
             <span className="text-sm font-extrabold text-blue-800 tracking-wide">BARSA</span>
@@ -218,7 +218,7 @@ export default function PuntuarPartido() {
       <div className="bg-blue-600 text-white rounded-xl p-4 mb-6 shadow-md">
         <h2 className="text-lg font-bold">CALIFICA A LOS JUGADORES</h2>
         <p className="text-sm text-blue-100 mt-1 mb-2">
-          Calificá el rendimiento de cada jugador, tené en cuenta queafectará su rating general.
+          Calificá el rendimiento de cada jugador, tené en cuenta que afectará su rating general.
         </p>
         <p className="text-sm text-blue-100">
           Si algún jugador cambió de equipo podés moverlo con las flechitas <ArrowLeftRight size={14} className="inline -mt-0.5 mx-0.5 text-blue-200" /> al costado de su nombre.
