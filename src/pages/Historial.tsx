@@ -72,8 +72,8 @@ export default function Historial() {
           const isExpanded = expandedId === p.id
           const isPuntuado = p.rendimiento && p.rendimiento.length > 0
           
-          const eqA = p.equipos_partido.filter((e:any) => e.equipo === 'A')
-          const eqB = p.equipos_partido.filter((e:any) => e.equipo === 'B')
+          const eqA = p.equipos_partido?.filter((e:any) => e.equipo === 'A') || []
+          const eqB = p.equipos_partido?.filter((e:any) => e.equipo === 'B') || []
 
           return (
             <div key={p.id} className="bg-white rounded-xl shadow-sm border overflow-hidden">
@@ -87,7 +87,7 @@ export default function Historial() {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-900 capitalize">
-                      {p.fecha ? format(new Date(p.fecha), "EEEE d 'de' MMMM", { locale: es }) : 'Desconocida'}
+                      {p.fecha && !isNaN(new Date(p.fecha).getTime()) ? format(new Date(p.fecha), "EEEE d 'de' MMMM", { locale: es }) : 'Desconocida'}
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs bg-gray-200 text-gray-700 px-2 rounded font-medium inline-block">
@@ -138,7 +138,7 @@ export default function Historial() {
                       {eqA.map((j:any, idx:number) => (
                         <li key={idx} className="text-xs flex justify-between">
                           <span className="font-semibold text-gray-500 w-8">{j.posicion_asignada}</span>
-                          <span className="truncate flex-1 font-medium">{j.jugadores.nombre}</span>
+                          <span className="truncate flex-1 font-medium">{j.jugadores?.nombre || 'Desconocido'}</span>
                         </li>
                       ))}
                     </ul>
@@ -151,7 +151,7 @@ export default function Historial() {
                       {eqB.map((j:any, idx:number) => (
                         <li key={idx} className="text-xs flex justify-between">
                           <span className="font-semibold text-gray-500 w-8">{j.posicion_asignada}</span>
-                          <span className="truncate flex-1 font-medium">{j.jugadores.nombre}</span>
+                          <span className="truncate flex-1 font-medium">{j.jugadores?.nombre || 'Desconocido'}</span>
                         </li>
                       ))}
                     </ul>
