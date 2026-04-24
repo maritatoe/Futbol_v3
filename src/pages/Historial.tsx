@@ -5,6 +5,7 @@ import { es } from 'date-fns/locale'
 import { ChevronDown, ChevronUp, Calendar, ClipboardCheck, Trash2, AlertTriangle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Historial() {
   const [partidos, setPartidos] = useState<any[]>([])
@@ -16,6 +17,7 @@ export default function Historial() {
   const [isDeleting, setIsDeleting] = useState(false)
 
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   useEffect(() => {
     fetchPartidos()
@@ -33,6 +35,7 @@ export default function Historial() {
         ),
         rendimiento ( id )
       `)
+      .eq('user_id', user?.id)
       .order('fecha', { ascending: false })
 
     if (!error && data) {
