@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Database } from '../types/database.types'
 import { armarEquiposInteligente, EquipoArmado } from '../lib/teamBuilderLogic'
-import { Users, Shuffle, Save, AlertTriangle, Zap, X, Type } from 'lucide-react'
+import { Users, Shuffle, Save, AlertTriangle, Zap, X } from 'lucide-react'
 import clsx from 'clsx'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -280,51 +280,40 @@ export default function ArmarPartido() {
 
       {/* Modal para nombres de equipos */}
       {showNameModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="bg-blue-100 p-2 rounded-full text-blue-600">
-                <Type size={24} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">¿Cómo se llaman los equipos?</h3>
-            </div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-20 p-4 z-50">
+          <div className="bg-white rounded-2xl p-4 max-w-sm w-full shadow-2xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">¿Cómo se llaman los equipos?</h3>
 
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-sm font-semibold text-blue-800 mb-1">Equipo 1 (Azul)</label>
-                <input
-                  type="text"
-                  value={equipo1Name}
-                  onChange={(e) => setEquipo1Name(e.target.value)}
-                  placeholder="Equipo A"
-                  className="w-full border-2 border-blue-200 rounded-xl px-4 py-3 text-lg font-bold text-blue-900 placeholder:text-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-                  autoFocus
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-orange-800 mb-1">Equipo 2 (Naranja)</label>
-                <input
-                  type="text"
-                  value={equipo2Name}
-                  onChange={(e) => setEquipo2Name(e.target.value)}
-                  placeholder="Equipo B"
-                  className="w-full border-2 border-orange-200 rounded-xl px-4 py-3 text-lg font-bold text-orange-900 placeholder:text-orange-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 outline-none transition-all"
-                />
-              </div>
+            <div className="space-y-3 mb-4">
+              <input
+                type="text"
+                value={equipo1Name}
+                onChange={(e) => setEquipo1Name(e.target.value)}
+                placeholder="Equipo A"
+                className="w-full border-2 border-blue-300 rounded-xl px-4 py-2 text-base font-bold text-blue-900 placeholder:text-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
+                autoFocus
+              />
+              <input
+                type="text"
+                value={equipo2Name}
+                onChange={(e) => setEquipo2Name(e.target.value)}
+                placeholder="Equipo B"
+                className="w-full border-2 border-orange-300 rounded-xl px-4 py-2 text-base font-bold text-orange-900 placeholder:text-orange-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 outline-none transition-all"
+              />
             </div>
 
             <div className="flex gap-3">
               <button
                 onClick={() => setShowNameModal(false)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 rounded-xl transition-colors"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2.5 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={confirmarYArmar}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-colors flex justify-center items-center gap-2"
               >
-                <Users size={18} /> Confirmar y Armar
+                <Users size={18} /> Confirmar
               </button>
             </div>
           </div>
