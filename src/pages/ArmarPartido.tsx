@@ -24,8 +24,8 @@ export default function ArmarPartido() {
 
   // Dynamic team names
   const [showNameModal, setShowNameModal] = useState(false)
-  const [equipo1Name, setEquipo1Name] = useState('Equipo A')
-  const [equipo2Name, setEquipo2Name] = useState('Equipo B')
+  const [equipo1Name, setEquipo1Name] = useState('')
+  const [equipo2Name, setEquipo2Name] = useState('')
   const [pendingVariacion, setPendingVariacion] = useState(false)
 
   const navigate = useNavigate()
@@ -125,8 +125,8 @@ export default function ArmarPartido() {
       setSeleccionados(new Set())
       setResultado(null)
       setBuildError(null)
-      setEquipo1Name('Equipo A')
-      setEquipo2Name('Equipo B')
+      setEquipo1Name('')
+      setEquipo2Name('')
       toast.success('¡Partido guardado con éxito!')
       navigate('/historial')
     }
@@ -290,6 +290,7 @@ export default function ArmarPartido() {
                 value={equipo1Name}
                 onChange={(e) => setEquipo1Name(e.target.value)}
                 placeholder="Equipo A"
+                maxLength={10}
                 className="w-full border-2 border-blue-300 rounded-xl px-4 py-2 text-base font-bold text-blue-900 placeholder:text-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                 autoFocus
               />
@@ -298,6 +299,7 @@ export default function ArmarPartido() {
                 value={equipo2Name}
                 onChange={(e) => setEquipo2Name(e.target.value)}
                 placeholder="Equipo B"
+                maxLength={10}
                 className="w-full border-2 border-orange-300 rounded-xl px-4 py-2 text-base font-bold text-orange-900 placeholder:text-orange-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 outline-none transition-all"
               />
             </div>
