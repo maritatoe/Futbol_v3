@@ -52,6 +52,8 @@ export interface Database {
           formacion: string
           goles_barsa: number | null
           goles_juve: number | null
+          equipo_1_nombre: string
+          equipo_2_nombre: string
           user_id?: string
         }
         Insert: {
@@ -60,6 +62,8 @@ export interface Database {
           formacion?: string
           goles_barsa?: number | null
           goles_juve?: number | null
+          equipo_1_nombre?: string
+          equipo_2_nombre?: string
           user_id?: string
         }
         Update: {
@@ -68,6 +72,8 @@ export interface Database {
           formacion?: string
           goles_barsa?: number | null
           goles_juve?: number | null
+          equipo_1_nombre?: string
+          equipo_2_nombre?: string
           user_id?: string
         }
         Relationships: []

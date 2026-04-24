@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Database } from '../types/database.types'
 import { armarEquiposInteligente, EquipoArmado } from '../lib/teamBuilderLogic'
-import { Users, Shuffle, Save, AlertTriangle, Zap, X } from 'lucide-react'
+import { Users, Shuffle, Save, AlertTriangle, Zap, X, Type } from 'lucide-react'
 import clsx from 'clsx'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -21,6 +21,12 @@ export default function ArmarPartido() {
 
   const [resultado, setResultado] = useState<{ equipoA: EquipoArmado, equipoB: EquipoArmado, diferencia: number } | null>(null)
   const [buildError, setBuildError] = useState<string | null>(null)
+
+  // Dynamic team names
+  const [showNameModal, setShowNameModal] = useState(false)
+  const [equipo1Name, setEquipo1Name] = useState('Equipo A')
+  const [equipo2Name, setEquipo2Name] = useState('Equipo B')
+  const [pendingVariacion, setPendingVariacion] = useState(false)
 
   const navigate = useNavigate()
 
@@ -65,11 +71,18 @@ export default function ArmarPartido() {
     setResultado(null)
   }
 
-  function armar(variacion = false) {
+  function handleGenerarClick(variacion = false) {
+    if (seleccionados.size < 2 || seleccionados.size % 2 !== 0) return
+    setPendingVariacion(variacion)
+    setShowNameModal(true)
+  }
+
+  function confirmarYArmar() {
+    setShowNameModal(false)
     setBuildError(null)
     const justPlayers = activos.filter(j => seleccionados.has(j.id))
     try {
-      const res = armarEquiposInteligente(justPlayers, variacion, restricciones)
+      const res = armarEquiposInteligente(justPlayers, pendingVariacion, restricciones)
       setResultado(res)
     } catch (err: any) {
       setBuildError(err.message)
@@ -81,6 +94,8 @@ export default function ArmarPartido() {
     const formacion = `${seleccionados.size / 2}v${seleccionados.size / 2}`
     const { data: partido, error: pErr } = await supabase.from('partidos').insert({
       formacion,
+      equipo_1_nombre: equipo1Name.trim() || 'Equipo A',
+      equipo_2_nombre: equipo2Name.trim() || 'Equipo B',
       user_id: user?.id
     }).select().single()
 
@@ -110,6 +125,8 @@ export default function ArmarPartido() {
       setSeleccionados(new Set())
       setResultado(null)
       setBuildError(null)
+      setEquipo1Name('Equipo A')
+      setEquipo2Name('Equipo B')
       toast.success('¡Partido guardado con éxito!')
       navigate('/historial')
     }
@@ -187,7 +204,7 @@ export default function ArmarPartido() {
           )}
           {modoRestriccion && (
             <div className="text-sm text-yellow-700 mt-2 bg-yellow-50 p-2 rounded-lg border border-yellow-100 italic">
-              {restriccionParcial ? "Tocá al segundo jugador para mandarlo a la Juve..." : "Tocá a dos jugadores para evitar que jueguen juntos, el primero que toques va al Barsa y el segundo a la Juve."}
+              {restriccionParcial ? "Tocá al segundo jugador para separarlo del primero..." : "Tocá a dos jugadores para evitar que jueguen juntos."}
             </div>
           )}
         </div>
@@ -195,17 +212,17 @@ export default function ArmarPartido() {
         {/* Action Buttons */}
         <div className="flex gap-2">
           <button
-            onClick={() => armar()}
+            onClick={() => handleGenerarClick(false)}
             className="flex-1 bg-blue-600 active:bg-blue-700 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 disabled:opacity-50"
-            disabled={modoRestriccion}
+            disabled={modoRestriccion || seleccionados.size < 2 || seleccionados.size % 2 !== 0}
           >
             <Users size={20} /> Generar Equipos
           </button>
           <button
-            onClick={() => armar(true)}
+            onClick={() => handleGenerarClick(true)}
             className="bg-purple-600 active:bg-purple-700 text-white p-3 rounded-xl px-4 shadow-md transition-all active:scale-95 flex items-center justify-center disabled:opacity-50"
             title="Añadir variación en los ratings para cambiar equipos"
-            disabled={modoRestriccion}
+            disabled={modoRestriccion || seleccionados.size < 2 || seleccionados.size % 2 !== 0}
           >
             <Shuffle size={20} />
           </button>
@@ -226,7 +243,7 @@ export default function ArmarPartido() {
           <div className="grid grid-cols-2 gap-4">
             {/* Equipo A */}
             <div className="bg-white rounded-2xl p-4 shadow-md border-t-8 border-t-blue-500 relative">
-              <h3 className="font-black text-xl text-blue-900 absolute -top-4 bg-white px-3 rounded-full border border-blue-200 shadow-sm left-1/2 -translate-x-1/2">Barsa</h3>
+              <h3 className="font-black text-xl text-blue-900 absolute -top-4 bg-white px-3 rounded-full border border-blue-200 shadow-sm left-1/2 -translate-x-1/2 truncate max-w-[90%] text-center">{equipo1Name}</h3>
               <div className="text-center text-xs font-bold text-gray-500 mt-2 mb-3 bg-gray-50 rounded-lg py-1">Overall: ★{resultado.equipoA.totalRating}</div>
 
               <div className="space-y-2">
@@ -241,7 +258,7 @@ export default function ArmarPartido() {
 
             {/* Equipo B */}
             <div className="bg-white rounded-2xl p-4 shadow-md border-t-8 border-t-orange-500 relative">
-              <h3 className="font-black text-xl text-orange-900 absolute -top-4 bg-white px-3 rounded-full border border-orange-200 shadow-sm left-1/2 -translate-x-1/2">Juve</h3>
+              <h3 className="font-black text-xl text-orange-900 absolute -top-4 bg-white px-3 rounded-full border border-orange-200 shadow-sm left-1/2 -translate-x-1/2 truncate max-w-[90%] text-center">{equipo2Name}</h3>
               <div className="text-center text-xs font-bold text-gray-500 mt-2 mb-3 bg-gray-50 rounded-lg py-1">Overall: ★{resultado.equipoB.totalRating}</div>
 
               <div className="space-y-2">
@@ -258,6 +275,59 @@ export default function ArmarPartido() {
           <button onClick={guardarPartido} className="w-full mt-4 bg-green-500 text-white font-bold p-4 rounded-xl shadow-lg border-b-4 border-green-700 active:translate-y-1 active:border-b-0 flex justify-center items-center gap-2">
             <Save size={20} /> Confirmar y Guardar Partido
           </button>
+        </div>
+      )}
+
+      {/* Modal para nombres de equipos */}
+      {showNameModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="bg-blue-100 p-2 rounded-full text-blue-600">
+                <Type size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">¿Cómo se llaman los equipos?</h3>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-semibold text-blue-800 mb-1">Equipo 1 (Azul)</label>
+                <input
+                  type="text"
+                  value={equipo1Name}
+                  onChange={(e) => setEquipo1Name(e.target.value)}
+                  placeholder="Equipo A"
+                  className="w-full border-2 border-blue-200 rounded-xl px-4 py-3 text-lg font-bold text-blue-900 placeholder:text-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-orange-800 mb-1">Equipo 2 (Naranja)</label>
+                <input
+                  type="text"
+                  value={equipo2Name}
+                  onChange={(e) => setEquipo2Name(e.target.value)}
+                  placeholder="Equipo B"
+                  className="w-full border-2 border-orange-200 rounded-xl px-4 py-3 text-lg font-bold text-orange-900 placeholder:text-orange-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowNameModal(false)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 rounded-xl transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmarYArmar}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2"
+              >
+                <Users size={18} /> Confirmar y Armar
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

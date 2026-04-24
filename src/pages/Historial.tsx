@@ -28,14 +28,14 @@ export default function Historial() {
     const { data, error } = await supabase
       .from('partidos')
       .select(`
-        id, fecha, formacion, goles_barsa, goles_juve,
+        id, fecha, formacion, goles_barsa, goles_juve, equipo_1_nombre, equipo_2_nombre,
         equipos_partido (
           equipo, posicion_asignada,
           jugadores ( nombre, rating )
         ),
         rendimiento ( id )
       `)
-      .eq('user_id', user?.id)
+      .eq('user_id', user?.id ?? '')
       .order('fecha', { ascending: false })
 
     if (!error && data) {
@@ -74,6 +74,8 @@ export default function Historial() {
         {partidos.map((p) => {
           const isExpanded = expandedId === p.id
           const isPuntuado = p.rendimiento && p.rendimiento.length > 0
+          const nombre1 = p.equipo_1_nombre || 'Equipo A'
+          const nombre2 = p.equipo_2_nombre || 'Equipo B'
           
           const eqA = p.equipos_partido?.filter((e:any) => e.equipo === 'A') || []
           const eqB = p.equipos_partido?.filter((e:any) => e.equipo === 'B') || []
@@ -104,13 +106,13 @@ export default function Historial() {
                     </div>
                     {isPuntuado && p.goles_barsa != null && p.goles_juve != null ? (
                       <div className="mt-1.5 flex items-center gap-1.5">
-                        <span className="text-sm font-black text-blue-700">Barsa {p.goles_barsa}</span>
+                        <span className="text-sm font-black text-blue-700">{nombre1} {p.goles_barsa}</span>
                         <span className="text-xs text-gray-400 font-bold">-</span>
-                        <span className="text-sm font-black text-orange-700">{p.goles_juve} Juve</span>
+                        <span className="text-sm font-black text-orange-700">{p.goles_juve} {nombre2}</span>
                       </div>
                     ) : (
                       <div className="mt-1.5">
-                        <span className="text-sm font-semibold text-gray-400">Barsa vs Juve</span>
+                        <span className="text-sm font-semibold text-gray-400">{nombre1} vs {nombre2}</span>
                       </div>
                     )}
                   </div>
@@ -136,7 +138,7 @@ export default function Historial() {
                 <div className="p-4 border-t bg-gray-50 flex gap-4">
                   {/* EQ A */}
                   <div className="flex-1">
-                    <h5 className="font-bold text-blue-800 text-sm mb-2 border-b-2 border-blue-200 pb-1">Barsa</h5>
+                    <h5 className="font-bold text-blue-800 text-sm mb-2 border-b-2 border-blue-200 pb-1">{nombre1}</h5>
                     <ul className="space-y-1">
                       {eqA.map((j:any, idx:number) => (
                         <li key={idx} className="text-xs flex justify-between">
@@ -149,7 +151,7 @@ export default function Historial() {
                   <div className="w-[1px] bg-gray-200"></div>
                   {/* EQ B */}
                   <div className="flex-1">
-                    <h5 className="font-bold text-orange-800 text-sm mb-2 border-b-2 border-orange-200 pb-1">Juve</h5>
+                    <h5 className="font-bold text-orange-800 text-sm mb-2 border-b-2 border-orange-200 pb-1">{nombre2}</h5>
                     <ul className="space-y-1">
                       {eqB.map((j:any, idx:number) => (
                         <li key={idx} className="text-xs flex justify-between">
